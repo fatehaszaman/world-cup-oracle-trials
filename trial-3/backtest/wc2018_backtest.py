@@ -12,7 +12,11 @@ significantly; Croatia's shootout coefficient lifts their knockout survival.
 from __future__ import annotations
 
 import sys
+import os
 import numpy as np
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from oracle.var_noise import simulate_match_var, simulate_group_var, VAR_BOUND, VAR_CONFIDENCE, _SIGMA
 
 # ---------------------------------------------------------------------------
 # Shootout ratings (same as 2022 backtest — these are structural national traits)
@@ -257,35 +261,18 @@ def _simulate_match(
     team_a: str, team_b: str, scores: dict,
     rng: np.random.Generator, knockout: bool = False
 ) -> str:
-    p_a = _win_prob(team_a, team_b, scores)
-    noise = rng.normal(0, 0.08)
-    p_a_noisy = float(np.clip(p_a + noise, 0.05, 0.95))
-
-    if knockout:
-        r = rng.random()
-        if abs(p_a_noisy - 0.5) < 0.10:
-            p_so = _shootout_win_prob(team_a, team_b)
-            return team_a if rng.random() < p_so else team_b
-        return team_a if r < p_a_noisy else team_b
-    else:
-        r = rng.random()
-        if r < p_a_noisy - 0.09:   return team_a
-        elif r < p_a_noisy + 0.09: return "draw"
-        else:                       return team_b
+    # VaR/CVaR bounded perturbation (3% VaR at 97th pct, CVaR cap 6%)
+    # Replaces unconstrained Gaussian (σ=0.08) from Trial 1 & 2
+    return simulate_match_var(
+        team_a, team_b, scores, rng,
+        shootout_ratings=SHOOTOUT_RATINGS,
+        shootout_weight=SHOOTOUT_WEIGHT,
+        knockout=knockout,
+    )
 
 def _simulate_group(teams, scores, rng):
-    points = {t: 0 for t in teams}
-    gd     = {t: 0.0 for t in teams}
-    for i, ta in enumerate(teams):
-        for tb in teams[i+1:]:
-            result = _simulate_match(ta, tb, scores, rng, knockout=False)
-            if result == ta:
-                points[ta] += 3; gd[ta] += rng.uniform(0.5,2.5); gd[tb] -= rng.uniform(0.5,2.0)
-            elif result == tb:
-                points[tb] += 3; gd[tb] += rng.uniform(0.5,2.5); gd[ta] -= rng.uniform(0.5,2.0)
-            else:
-                points[ta] += 1; points[tb] += 1
-    return sorted(teams, key=lambda t: (points[t], gd[t]), reverse=True)[:2]
+    # VaR/CVaR bounded group simulation — wraps simulate_group_var
+    return simulate_group_var(teams, scores, rng)
 
 # ---------------------------------------------------------------------------
 # Main backtest class

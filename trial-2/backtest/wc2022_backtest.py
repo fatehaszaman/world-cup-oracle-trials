@@ -61,11 +61,16 @@ Bracket Prediction Score (BPS) methodology:
 from __future__ import annotations
 
 import logging
+import os
 import random
+import sys
 from dataclasses import dataclass, field
 from typing import Optional
 
 import numpy as np
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from oracle.var_noise import simulate_match_var, simulate_group_var, VAR_BOUND, VAR_CONFIDENCE, _SIGMA
 
 logger = logging.getLogger(__name__)
 
@@ -210,29 +215,21 @@ def _simulate_match(
     """
     Simulate *n* matches between team_a and team_b.
     Returns list of winners (length n).
+    Uses VaR/CVaR bounded noise (3% VaR at 97th pct) — replaces
+    unconstrained Gaussian (σ=0.08). Trial 2 call signature preserved.
+    Draws always resolved to a winner (50/50 extra time) — return list
+    never contains 'draw', matching the original contract.
     """
-    sa = scores.get(team_a, 0.5)
-    sb = scores.get(team_b, 0.5)
-    total = sa + sb
-
-    p_a = sa / total
-    p_b = sb / total
-
-    if allow_draw:
-        draw_boost = 0.15
-        p_a *= (1 - draw_boost)
-        p_b *= (1 - draw_boost)
-
     winners = []
     for _ in range(n):
-        r = rng.random()
-        if r < p_a:
-            winners.append(team_a)
-        elif r < p_a + p_b:
-            winners.append(team_b)
-        else:
-            # Draw → extra time / penalties: equal probability
-            winners.append(team_a if rng.random() < 0.5 else team_b)
+        # Always knockout=True so simulate_match_var resolves draws internally
+        result = simulate_match_var(
+            team_a, team_b, scores, rng,
+            shootout_ratings=None,
+            shootout_weight=0.18,
+            knockout=True,
+        )
+        winners.append(result)
     return winners
 
 
@@ -241,35 +238,9 @@ def _simulate_group(
     scores: dict[str, float],
     rng: np.random.Generator,
 ) -> list[str]:
-    """Simulate a 4-team group; return top 2 qualifiers."""
-    points: dict[str, int] = {t: 0 for t in group_teams}
-    gd: dict[str, int] = {t: 0 for t in group_teams}
-
-    pairs = [(group_teams[i], group_teams[j])
-             for i in range(len(group_teams))
-             for j in range(i + 1, len(group_teams))]
-
-    for ta, tb in pairs:
-        sa = scores.get(ta, 0.5)
-        sb = scores.get(tb, 0.5)
-        total = sa + sb
-        r = rng.random()
-        thresh_a = (sa / total) * 0.65
-        thresh_d = thresh_a + 0.25
-        if r < thresh_a:
-            points[ta] += 3
-            gd[ta] += 1
-            gd[tb] -= 1
-        elif r < thresh_d:
-            points[ta] += 1
-            points[tb] += 1
-        else:
-            points[tb] += 3
-            gd[tb] += 1
-            gd[ta] -= 1
-
-    ranked = sorted(group_teams, key=lambda t: (points[t], gd[t]), reverse=True)
-    return ranked[:2]
+    """Simulate a 4-team group; return top 2 qualifiers.
+    VaR/CVaR bounded — wraps simulate_group_var."""
+    return simulate_group_var(group_teams, scores, rng)
 
 
 # ---------------------------------------------------------------------------

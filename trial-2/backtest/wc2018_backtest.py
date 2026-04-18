@@ -25,6 +25,7 @@ Developer Notes:
 from __future__ import annotations
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from oracle.var_noise import simulate_match_var, simulate_group_var, VAR_BOUND, VAR_CONFIDENCE, _SIGMA
 
 import random
 import numpy as np
@@ -180,26 +181,15 @@ class WC2018Backtest:
 
     def _simulate_match(self, team_a: str, team_b: str,
                         knockout: bool = False) -> str:
-        """Simulate a single match; knockout forces a winner."""
-        p_a = self._win_probability(team_a, team_b)
-        noise = self.rng.normal(0, 0.08)          # match-day variance
-        p_a_noisy = np.clip(p_a + noise, 0.05, 0.95)
-
-        if knockout:
-            # In knockout, draw → 50/50 extra time/pens
-            r = self.rng.random()
-            if r < p_a_noisy:
-                return team_a
-            else:
-                return team_b
-        else:
-            r = self.rng.random()
-            if r < p_a_noisy - 0.08:
-                return team_a  # A wins
-            elif r < p_a_noisy + 0.08:
-                return "draw"
-            else:
-                return team_b  # B wins
+        """Simulate a single match; knockout forces a winner.
+        VaR/CVaR bounded perturbation (3% VaR at 97th pct, CVaR cap 6%)
+        replaces unconstrained Gaussian (σ=0.08). Trial 2 class interface preserved."""
+        return simulate_match_var(
+            team_a, team_b, self.scores, self.rng,
+            shootout_ratings=None,   # Trial 2 wc2018: no shootout ratings
+            shootout_weight=0.18,
+            knockout=knockout,
+        )
 
     def _simulate_group_stage(self) -> dict[str, tuple[str, str]]:
         """Returns {group: (winner, runner_up)} for all 8 groups."""
