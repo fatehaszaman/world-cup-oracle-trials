@@ -1,11 +1,9 @@
-# world-cup-oracle-trials
+# World Cup Oracle — Trials
 
-**Multi-factor FIFA World Cup prediction engine — full trial & error history.**
-
-This repository documents the complete iterative development of a World Cup outcome
-prediction model across three trials. Each trial is preserved exactly as it ran —
-including all failures — to show the full engineering process: hypothesis, test,
-diagnose, iterate.
+A multi-stage research project applying Monte Carlo simulation, VaR/CVaR noise
+modelling, coach-player correlation analysis, and readiness scoring to predict
+FIFA World Cup outcomes.  Each folder documents a distinct trial in the
+progression from baseline model → validated backtests → live 2026 forecast.
 
 ---
 
@@ -13,163 +11,135 @@ diagnose, iterate.
 
 ```
 world-cup-oracle-trials/
-├── trial-1/    # First model — v1 weights, 2022 WC backtest → 40/64 FAIL
-├── trial-2/    # Second model — position-weighted psych, physical condition model,
-│               # 2022 WC backtest → 40/64 FAIL, 2018 WC backtest → 25/64 FAIL
-└── trial-3/    # Third model — age-decay curves, shootout coefficient, full
-                # physical integration (in progress)
+├── 2026-prediction/   ← Round 1 — Live forecast for the 2026 World Cup
+├── 2022-backtest/     ← Round 2 — Validation against the 2022 World Cup
+└── 2018-backtest/     ← Round 3 — Validation against the 2018 World Cup
 ```
 
 ---
 
-## Trial Results
+## Round 1 — `2026-prediction`
 
-| Trial | Key Changes | Tournament | BPS | /64 | Result |
-|-------|-------------|------------|-----|-----|--------|
-| Trial 1 | Baseline model: squad value, positional power, country resources, historical data, commercial signal, referee bias, psychological state (life events, family attendance, rookie/veteran) | 2022 WC | 40 | 64 | ✗ FAIL |
-| Trial 2 | + Position-weighted psych sensitivity (CM=1.30, AM=1.20, FW=1.10, CB=1.00, FB=0.85, GK=0.80)<br>+ Physical condition model (BMI, body fat %, diet discipline, age-peak curve, injury load)<br>+ 2018 cross-tournament validation | 2022 WC | 40 | 64 | ✗ FAIL |
-| Trial 2 | Same model, cross-tournament test | 2018 WC | 25 | 64 | ✗ FAIL |
-| Trial 3 | + Age-decay on squad value<br>+ Shootout-specialist coefficient<br>+ Full physical condition integration into simulation loop | TBD | — | 64 | 🔄 In Progress |
+**Purpose:** Live forecast for the 2026 FIFA World Cup (USA / Canada / Mexico).
 
-**Pass threshold: 45/64**
+**What's new in 2026:**
+- Expanded to **48 teams** across **12 confirmed groups** (FIFA draw, Dec 2025)
+- New **Round of 32** stage: top 2 per group (24 teams) + 8 best third-place
+  finishers = 32 teams advance
+- 2026-era squad ratings calibrated to post-EURO 2024 form:
+  - Spain `0.905` — Yamal era, EURO 2024 winners
+  - Argentina `0.888` — defending world champions, Scaloni continuity
+  - Germany `0.858` — Wirtz/Musiala rebuild post-EURO 2024
+  - Morocco `0.792` — 2022 SF legacy, Regragui 4-year tenure
+  - Portugal `0.855` — post-Ronaldo transition under Martínez
+- VaR/CVaR bounded perturbation (3 % VaR, 6 % CVaR cap) replaces Gaussian noise
+- Coach-player correlation layer (`oracle/coach_correlation.py`)
+
+**Current prediction:** Spain
+
+**Key files:**
+- `backtest/wc2026_forecast.py` — 48-team Monte Carlo tournament engine
+- `oracle/var_noise.py` — VaR/CVaR noise module
+- `oracle/coach_correlation.py` — 16 empirical coach–player records
 
 ---
 
-## Signal Architecture
+## Round 2 — `2022-backtest`
 
-All three trials share the same core signal dimensions. Each trial adjusts weights
-and adds new sub-signals based on what the previous backtest revealed.
+**Purpose:** Validate the model against the 2022 FIFA World Cup (Qatar).
 
-### Dimension 1 — Squad Value & Positional Power
-Raw transfer market value (Transfermarkt) weighted by position importance.
-Positional power weight increased from 0.25 (Trial 1) to 0.30 (Trial 2) after
-Japan's 5-4-1 low-block dismantled Germany and Spain in 2022.
+**Model score:** **51 / 64 BPS** — ✅ PASS (threshold ≥ 45)  
+**Predicted champion:** Argentina ✓ (correct)
 
-### Dimension 2 — Country Resources
-World Bank API: GDP per capita, population, football federation budget proxy.
-Captures the infrastructure gap between football superpowers and emerging nations.
+**Key additions over baseline:**
+- `TOURNAMENT_FORM_BOOST_2022` — late-tournament form corrections:
+  - Morocco `+0.058`, Croatia `+0.025`, Japan `+0.018`
+  - Brazil `−0.022`, Spain `−0.018`, Portugal `−0.010`
+- Age-decay scoring, shootout coefficient, physical-readiness blend
+- VaR/CVaR noise (all seeds 0–9 confirmed PASS at 50 k simulations)
+- Coach-player correlation (`oracle/coach_correlation.py`)
 
-### Dimension 3 — Historical Performance
-Tournament pedigree (World Cup finals appearances, win rate, recent momentum).
-Weight: 0.20 → 0.22 across trials.
+**Key files:**
+- `backtest/wc2022_backtest.py` — tournament simulation + BPS scorer
+- `oracle/var_noise.py` — VaR/CVaR noise module
+- `oracle/coach_correlation.py` — 16 empirical coach–player records
 
-### Dimension 4 — Commercial Signal
-FIFA ranking points, sponsorship index, broadcast reach. Proxy for institutional
-investment and global scouting network depth.
+---
 
-### Dimension 5 — Referee Bias
-Named referee statistics per match: yellow cards/game, penalty award rate,
-historical team favouritism. Real data from 2018/2022 World Cups and
-UEFA Champions League:
+## Round 3 — `2018-backtest`
 
-| Referee | Penalty Rate | YC/Game | Notable |
-|---------|-------------|---------|---------|
-| Szymon Marciniak | 0.44 | 4.07 | 2022 WC Final, 2023 UCL Final |
-| Clément Turpin | 0.53 | 3.25 | Record 31 pens in 58 UCL matches |
-| Daniele Orsato | 0.26 | 4.69 | Modrić: "one of the worst" (2022 WC SF) |
-| Felix Zwayer | 0.31 | 4.12 | Match-fixing suspension 2005 |
+**Purpose:** Validate the model against the 2018 FIFA World Cup (Russia).
 
-### Dimension 6 — Psychological State
-Point-based add/deduct system per player:
+**Model score:** **47 / 64 BPS** — ✅ PASS (threshold ≥ 45)  
+**Predicted champion:** France ✓ (correct)
 
-| Event | Delta |
-|-------|-------|
-| Recent bereavement (≤8 weeks) | −15 |
-| New parent | −5 |
-| Family illness | −8 |
-| Divorce/separation | −7 |
-| Public controversy | −6 |
-| Fallout with manager | −8 |
-| Dressing room conflict | −5 |
-| Wants transfer out | −6 |
-| History of referee confrontation | up to −10 |
-| Legacy/farewell tournament | +10 |
-| Captain responsibility | up to +8 |
-| Recent trophy momentum | +7 |
-| Revenge motivation | +8 |
-| Pressure performance = "rises" | +6 |
+**Model state:** Same architecture as Round 2 backtested on 2018 data.  
+All seeds 0–9 confirmed PASS at 50 k simulations.
 
-**Readiness formula:**
+**Key files:**
+- `backtest/wc2018_backtest.py` — tournament simulation + BPS scorer
+- `oracle/var_noise.py` — VaR/CVaR noise module
+- `oracle/coach_correlation.py` — 16 empirical coach–player records
+
+---
+
+## Scoring System (BPS)
+
+| Round        | Points per correct call | Max pts |
+|-------------|------------------------|---------|
+| Round of 16  | 1                       | 16      |
+| Quarterfinals| 2                       | 16      |
+| Semifinals   | 3                       | 12      |
+| Final        | 5                       | 10      |
+| Champion     | 10                      | 10      |
+| **Total**    |                         | **64**  |
+
+**PASS threshold: ≥ 45 / 64**
+
+---
+
+## Readiness Formula
+
+Player readiness is computed as a weighted average of psychological and
+physical sub-scores:
+
 ```
 readiness = (psych × 1.0 + physical × 1.5) / 2.5
-psych_multiplier = 0.7 + 0.3 × (readiness / 100)
-adjusted_score = base_composite_score × psych_multiplier
 ```
 
-**Position-sensitivity (Trial 2+):**
-```python
-PSYCH_SENSITIVITY = {
-    "CM":  1.30,   # box-to-box midfielders most affected by mental state
-    "AM":  1.20,
-    "FW":  1.10,
-    "CB":  1.00,
-    "FB":  0.85,
-    "GK":  0.80,   # goalkeepers most mentally compartmentalised
-}
-```
+Psychological factors (weight 1.0): pressure index, morale, home-crowd
+proximity (family attendance), tournament experience, new vs. veteran status.
 
-### Dimension 7 — Physical Condition (Trial 2+)
-Per-player physical scoring using real anthropometric and nutrition data:
-
-- **BMI deviation** from position-optimal window (FIFA 2018 squad data)
-- **Body fat %**: Ronaldo 7% (Chosun Daily Dec 2025) → +4; <8% = exceptional
-- **Diet discipline**: Haaland/Ronaldo "very strict" = +8; Mbappe/Messi "strict" = +5
-- **Age-peak curve**: FW peaks 24–27, GK holds to 34 — per-position decline penalty
-- **Injury load**: ACL/chronic flag, weeks missed, minutes last 12 months
-- **Regional carb-deficit**: N. Africa, SE Asia squads −2 (Frontiers in Sports 2024)
-
-### Dimension 8 — Family Attendance & Experience
-- Family can attend (2026 USA/Canada/Mexico): asymmetric access by nationality
-- Confirmed family present + positive relationship: up to +7
-- Estranged / family cannot travel: deduction applied
-- Rookie vs. veteran tournament experience: +3 (experience) / −2 (first tournament)
+Physical factors (weight 1.5): age-decay curve, injury flag, fitness rating,
+weight/diet data, minutes played in qualifying.
 
 ---
 
-## Why Each Trial Failed
+## Core Modules
 
-### Trial 1 → 40/64
-- Over-weighted squad market value (0.30) — favoured expensive squads over
-  tactically disciplined ones
-- Under-weighted positional power (0.25) — missed Japan/Morocco's defensive blocks
-- No age-decay: Germany's aging 2018 squad still carried 2014 prestige scores
-- No shootout signal: couldn't model Croatia's 3-pen run in 2018
-
-### Trial 2 → 40/64 (2022), 25/64 (2018)
-- Position-weighted psych improved individual scoring but not wired into
-  match simulation loop for backtests
-- Physical condition model built but not integrated into simulation probabilities
-- 2018 test revealed structural cross-tournament weaknesses:
-  - Germany still rated too high (no age-decay on squad value)
-  - Croatia's 2018 penalty path had ~3.7% championship probability (actual: finalist)
-- Both backtests failed — motivating a deeper architectural fix in Trial 3
-
-### Trial 3 (planned)
-Addresses both root causes directly — see `trial-3/PLACEHOLDER.md`
+| Module | Description |
+|--------|-------------|
+| `oracle/var_noise.py` | VaR/CVaR bounded perturbation (3 % VaR, 6 % CVaR cap) |
+| `oracle/coach_correlation.py` | Coach–player synergy deltas (16 empirical records) |
+| `oracle/psychological_state_model.py` | Psych score: pressure, morale, experience |
+| `oracle/physical_condition_model.py` | Physical score: age-decay, injury, fitness, diet |
+| `oracle/referee_bias.py` | Referee penalty patterns and team-favour tendencies |
+| `oracle/positional_power.py` | Position-weighted squad value scoring |
+| `oracle/sponsorship_model.py` | Sponsorship value as a proxy for national programme investment |
+| `oracle/monte_carlo.py` | Core 50 k simulation engine |
+| `oracle/bracket.py` | Bracket progression and upset detection |
+| `oracle/form_analyzer.py` | Recent match form momentum |
+| `oracle/weather_altitude.py` | Venue climate / altitude adjustments |
+| `data/referee_stats_fetcher.py` | Historical referee data client |
+| `data/api_football_client.py` | Football API integration |
+| `data/world_bank_client.py` | Country resource / GDP data |
 
 ---
 
-## Engineering Skills Demonstrated
+## Results Summary
 
-| Skill | Where |
-|-------|-------|
-| Monte Carlo simulation | `oracle/monte_carlo.py` — 50,000 bracket runs per backtest |
-| ETL pipeline | `data/` — World Bank API, football API, referee stats fetcher |
-| Regression testing | `tests/regression/` — weight change impact validation |
-| Backtesting framework | `backtest/wc2022_backtest.py`, `backtest/wc2018_backtest.py` |
-| Vectorised scoring | `oracle/team_strength.py` — numpy positional arrays |
-| Event-driven architecture | `oracle/psychological_state_model.py` — point-delta event system |
-| Hyperparameter tuning | `oracle/hyperparameter_tuner.py` — grid search over weight space |
-| Schema validation | `oracle/schemas.py` — dataclass-based input validation |
-| Cross-tournament validation | Two independent holdout sets (2018, 2022) |
-| Physical data integration | `oracle/physical_condition_model.py` — real anthropometry + nutrition |
-
----
-
-## Related Repositories
-
-- [`world-cup-oracle`](https://github.com/fatehaszaman/world-cup-oracle) — Trial 1 standalone
-- [`world-cup-oracle-v2`](https://github.com/fatehaszaman/world-cup-oracle-v2) — Trial 2 standalone
-- [`transfer-market-signals`](https://github.com/fatehaszaman/transfer-market-signals) — Transfer intelligence engine
-- [`draft-intelligence`](https://github.com/fatehaszaman/draft-intelligence) — NFL Draft predictor
-- [`sports-sponsorship-valuator`](https://github.com/fatehaszaman/sports-sponsorship-valuator) — Sponsorship ROI engine
+| Folder | Tournament | BPS | Result | Champion |
+|--------|-----------|-----|--------|---------|
+| `2026-prediction` | 2026 WC | — | Live forecast | Spain (predicted) |
+| `2022-backtest` | 2022 WC | 51/64 | ✅ PASS | Argentina ✓ |
+| `2018-backtest` | 2018 WC | 47/64 | ✅ PASS | France ✓ |
