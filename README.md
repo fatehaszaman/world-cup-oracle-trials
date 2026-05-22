@@ -5,6 +5,12 @@ modelling, coach-player correlation analysis, and readiness scoring to predict
 FIFA World Cup outcomes.  Each folder documents a distinct trial in the
 progression from baseline model → validated backtests → live 2026 forecast.
 
+> **Preserved failure history.** The 2018-backtest and 2022-backtest folders
+> are intentionally pinned snapshots of earlier model iterations, kept so the
+> failure-analysis → weight-rebalancing workflow that produced v3 is fully
+> reproducible. See [CHANGELOG.md](./CHANGELOG.md) for the iteration log and
+> the rationale for every weight change between trials.
+
 ---
 
 ## Repository Structure
