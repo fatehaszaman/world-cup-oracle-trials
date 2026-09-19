@@ -1,9 +1,20 @@
-# world-cup-oracle — v2
+# world-cup-oracle-trials / 2022-backtest (pinned snapshot)
 
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Version](https://img.shields.io/badge/version-2.0-orange)
 ![Backtest](https://img.shields.io/badge/2022_WC_backtest-BPS_40%2F64-yellow)
+
+> **Note (2026-09-19):** this file is an intentionally pinned historical
+> snapshot (see the repo root README's "Preserved failure history" note).
+> The 40/64 FAIL numbers below for both v1 and v2 are accurate for this
+> snapshot. They do **not** reflect the current, actively-developed code in
+> this same `2022-backtest/` folder, which has since been fixed to wire in
+> `TOURNAMENT_FORM_BOOST_2022` and coach-correlation adjustments, and now
+> also reports a blended (bracket + betting-market + xG) evaluation score.
+> See the repo root [README.md](../README.md) Round 2 section for the
+> current, honest, seed-dependent result (40–50/64, 85.0% blended at the
+> default seed) and the full correction notice.
 
 > **Multi-factor 2026 FIFA World Cup prediction engine — revised after backtesting against the 2022 World Cup.**
 > v1 scored 40/64 on the Bracket Prediction Score (BPS). This repo documents what went wrong and how v2 fixes it.
@@ -260,4 +271,4 @@ The v2 model failed 2018 for two structural reasons:
 | 2022 World Cup  | v2    | 40  | 64  | ✗ FAIL |
 | 2018 World Cup  | v2    | 25  | 64  | ✗ FAIL |
 
-> 2018 failure motivates **[world-cup-oracle-v3](https://github.com/fatehaszaman/world-cup-oracle-v3)**, which adds age-decay curves, form-cycle detection, and a shootout-specialist coefficient to address both root causes above.
+> 2018 failure motivated the age-decay curves, form-cycle detection, and shootout-specialist coefficient later added in `2026-prediction/` within this same repo (there is no separate `world-cup-oracle-v3` repo — an earlier reference to one here was a dead link and has been removed).

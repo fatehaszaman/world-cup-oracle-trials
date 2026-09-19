@@ -140,6 +140,21 @@ def var_perturb(
     return float(np.clip(p + noise, 0.02, 0.98))
 
 
+def implied_win_prob(team_a: str, team_b: str, scores: dict[str, float]) -> float:
+    """
+    Deterministic (pre-noise) model win probability for team_a over team_b,
+    using the same logistic-on-strength-diff formula as simulate_match_var,
+    without the VaR/CVaR perturbation applied per-simulation. Added
+    2026-09-19 to support market-calibration evaluation (Brier score against
+    real betting-implied probabilities) without needing a Monte Carlo win-rate
+    estimate for a single fixed pairing.
+    """
+    sa = scores.get(team_a, 0.5)
+    sb = scores.get(team_b, 0.5)
+    diff = sa - sb
+    return 1.0 / (1.0 + np.exp(-6.0 * diff))
+
+
 def simulate_match_var(
     team_a: str,
     team_b: str,

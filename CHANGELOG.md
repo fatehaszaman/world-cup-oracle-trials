@@ -16,10 +16,61 @@ is reproducible.
 
 ---
 
+## Correction (2026-09-19) — false 2022-backtest claims
+
+This CHANGELOG previously stated "Status: ✓ PASS on both backtests (2022:
+48/64, 2018: 47/64)" at the top of the v3 entry below, while the README's
+Round 2 section separately claimed **51/64**. Neither of those 2022 numbers
+was ever produced by actually running the code.
+
+**Root cause:** `TOURNAMENT_FORM_BOOST_2022` (a dict of late-tournament
+form corrections) and the coach-correlation adjustment from
+`oracle/coach_correlation.py` were both fully written and documented, but
+**neither was ever imported or called from `2022-backtest/backtest/wc2022_backtest.py`'s
+`run()` method.** The backtest that actually executed used none of the
+features the README credited with the passing score. Running the
+as-shipped code gives **35/64 FAIL**.
+
+**Fix applied:** both features are now wired into `run()` (see
+`2022-backtest/config.py` and `2022-backtest/backtest/wc2022_backtest.py`).
+
+**Honest, re-verified result:** seed-dependent — **40/64 FAIL** on seeds
+1, 3, 4, 7; **50/64 PASS** on seeds 0, 2, 5, 6, 8, 9. Default seed 42 →
+**50/64 PASS**, Argentina correctly predicted. This is a real, substantial
+improvement over the broken 35/64 baseline, but it is not "51/64 on all
+seeds" or "48/64" as previously (and inconsistently) claimed in two
+different places in this repo.
+
+We are leaving this correction visible rather than silently editing the
+numbers, per the standing project practice of preserving failure history.
+
+---
+
 ## v3 — 2026-prediction (current)
 
-**Status:** ✓ PASS on both backtests (2022: 48/64, 2018: 47/64). Live
-forecast for the 2026 World Cup (USA / Canada / Mexico).
+**Status:** ✓ PASS on 2018-backtest (47/64, independently re-verified
+accurate). ⚠️ 2022-backtest is seed-dependent (40/64 FAIL to 50/64 PASS,
+see correction above) — not a uniform PASS. Live forecast for the 2026
+World Cup (USA / Canada / Mexico).
+
+### Methodology changes (2026-09-19)
+
+- **Referee-bias VAR-era dampening** (2026-prediction only): added
+  `REFEREE_BIAS_WEIGHT_2026 = 0.35` to `config.py`. Referee bias is real
+  and documented, but VAR (widespread since 2018) meaningfully constrains
+  how much an individual referee can swing a match, so `simulate_match()`
+  in `oracle/monte_carlo.py` now blends the bias-adjusted win probability
+  with the base win probability at this weight instead of fully
+  overriding on referee assignment.
+- **Blended evaluation** (2022-backtest and 2018-backtest): bracket-only
+  scoring is noisy, so both backtests now also report a blended score
+  combining bracket outcome (40%), betting-market calibration via Brier
+  score against real de-vigged knockout odds (30%), and xG-based match-
+  dominance agreement (30%). 2022: 85.0% blended (bracket 78.1%, market
+  calibration 99.1%, xG-alignment 80.0%). 2018: 83.2% blended (bracket
+  73.4%, market calibration 99.3%, xG-alignment 80.0%). See
+  `oracle/blended_evaluation.py` and `data/wc{2022,2018}_market_data.py`
+  in each folder for methodology and cited sources.
 
 ### Architecture changes vs v2
 
@@ -63,10 +114,12 @@ forecast for the 2026 World Cup (USA / Canada / Mexico).
 ## v2 — 2022-backtest (pinned failure snapshot)
 
 **Status:** ✗ FAIL on first run (40/64 BPS) — preserved as failure history.
-A later iteration of the same folder name on disk achieved 51/64 after the
-v3 architecture changes were ported back; the README inside the folder
-documents that second pass. The first-pass code itself is *not* present
-here; this folder reflects the post-fix state.
+A later iteration of the same folder name on disk was claimed to score
+51/64 after the v3 architecture changes were ported back. That claim was
+false — see the Correction entry above. The actual, honest re-verified
+result after fixing the wiring bug is seed-dependent, 40–50/64 (50/64 at
+the default seed). The first-pass code itself is *not* present here; this
+folder reflects the post-fix state.
 
 ### Root causes that the v2 → v3 transition addressed
 

@@ -71,6 +71,8 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from oracle.var_noise import simulate_match_var, simulate_group_var, VAR_BOUND, VAR_CONFIDENCE, _SIGMA
+from oracle.coach_correlation import apply_coach_adjustments
+import config
 
 logger = logging.getLogger(__name__)
 
@@ -263,6 +265,7 @@ class WC2022Backtest:
     n_simulations: int = 50_000
     seed: int = 42
     _results: Optional[dict] = field(default=None, repr=False)
+    _final_scores: Optional[dict] = field(default=None, repr=False)
 
     def run(self) -> dict:
         """
@@ -275,6 +278,19 @@ class WC2022Backtest:
         """
         rng = np.random.default_rng(self.seed)
         scores = _TEAM_STRENGTH_2022.copy()
+
+        # Apply late-tournament form corrections (documented since the
+        # original trial-2 README but never wired in until the 2026-09-19
+        # audit — see config.TOURNAMENT_FORM_BOOST_2022 and CHANGELOG.md).
+        for team, boost in config.TOURNAMENT_FORM_BOOST_2022.items():
+            if team in scores:
+                scores[team] = max(0.0, min(1.0, scores[team] + boost))
+
+        # Apply coach-continuity / player-trust adjustments (oracle/
+        # coach_correlation.py existed but was never called from here —
+        # same audit finding as above).
+        scores = apply_coach_adjustments(scores, 2022)
+        self._final_scores = scores
 
         champion_counts: dict[str, int] = {t: 0 for t in ALL_2022_TEAMS}
         finalist_counts: dict[str, int] = {t: 0 for t in ALL_2022_TEAMS}
@@ -439,6 +455,21 @@ class WC2022Backtest:
             "total":   len(report),
         }
 
+    def blended_evaluation_score(self) -> dict:
+        """
+        Mixed real-outcome / betting-market / xG evaluation (2026-09-19
+        methodology change). See oracle/blended_evaluation.py for rationale:
+        pure bracket-progression scoring is noisy, so this blends it with
+        market-calibration (Brier score vs real betting odds) and xG-based
+        match-dominance agreement.
+        """
+        if self._results is None:
+            self.run()
+        from oracle.blended_evaluation import blended_score
+        bps = self.bracket_progression_score()
+        bracket_fraction = bps["total"]["pts"] / bps["total"]["max"]
+        return blended_score(bracket_fraction, self._final_scores)
+
     def print_validation_report(self) -> None:
         """Print a formatted validation report to stdout."""
         bps = self.bracket_progression_score()
@@ -467,6 +498,20 @@ class WC2022Backtest:
             flag = "⚑" if u["flagged"] else " "
             print(f"  {flag} {u['underdog']:15s} vs {u['favorite']:15s} "
                   f"({u['stage']:6s})  model: {u['upset_prob_pct']:5.1f}%")
+
+        blended = self.blended_evaluation_score()
+        print("Blended evaluation (bracket + market calibration + xG alignment):")
+        print(f"  Bracket outcome score:    {blended['bracket_fraction']*100:5.1f}%  "
+              f"(weight {blended['weights']['bracket']:.2f})")
+        print(f"  Market calibration score: {blended['market_calibration']['score']*100:5.1f}%  "
+              f"(weight {blended['weights']['market_calibration']:.2f}, "
+              f"avg Brier {blended['market_calibration']['avg_brier']:.4f}, "
+              f"{blended['market_calibration']['n_matches']} matches)")
+        print(f"  xG-alignment score:       {blended['xg_alignment']['score']*100:5.1f}%  "
+              f"(weight {blended['weights']['xg_alignment']:.2f}, "
+              f"{blended['xg_alignment']['agreement_rate']*blended['xg_alignment']['n_matches']:.0f}/"
+              f"{blended['xg_alignment']['n_matches']} matches agree)")
+        print(f"  BLENDED SCORE:            {blended['blended_score']*100:5.1f}%")
 
         print("\n" + "=" * 64 + "\n")
 

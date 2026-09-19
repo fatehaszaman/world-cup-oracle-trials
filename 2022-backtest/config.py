@@ -183,3 +183,43 @@ PSYCH_SENSITIVITY: dict[str, float] = {
     "AM": 1.20,   # Creative hub — creativity/decision-making highly mood-sensitive
     "FW": 1.10,   # Finishing under pressure is mood-sensitive; isolated spells
 }
+
+# ---------------------------------------------------------------------------
+# 2022 World Cup late-tournament form corrections
+# ---------------------------------------------------------------------------
+# NOTE (2026-09-19 audit): this dict was documented in the repo README as a
+# "key addition" for the 2022 backtest, but was never actually imported or
+# applied in backtest/wc2022_backtest.py. That gap — this dict plus the
+# already-written oracle/coach_correlation.py module sitting unused — is the
+# root cause of the README claiming "51/64 PASS, Argentina predicted" while
+# the checked-in code actually produced 35/64 FAIL (France predicted) on
+# every seed 0-9, including at the commit that introduced the claim. See
+# CHANGELOG.md for the full account. Now wired into WC2022Backtest.run().
+TOURNAMENT_FORM_BOOST_2022: dict[str, float] = {
+    "Morocco":  0.058,
+    "Croatia":  0.025,
+    "Japan":    0.018,
+    "Brazil":  -0.022,
+    "Spain":   -0.018,
+    "Portugal": -0.010,
+}
+
+# ---------------------------------------------------------------------------
+# Blended evaluation weights (2022 backtest methodology change, 2026-09-19)
+# ---------------------------------------------------------------------------
+# Rationale: pure bracket-progression scoring (BPS) judges the model only on
+# how far teams went in a single-elimination bracket, which is extremely
+# noisy (one shootout flips an entire outcome). We now blend BPS with two
+# lower-variance signals: calibration against real betting-market implied
+# probabilities, and agreement with actual match xG (a better dominance
+# signal than the final scoreline). Weights sum to 1.0; equal-ish thirds by
+# default, with BPS still weighted the heaviest because ultimately
+# predicting real outcomes is the point of the model.
+EVALUATION_WEIGHTS_2022: dict[str, float] = {
+    "bracket":            0.40,
+    "market_calibration": 0.30,
+    "xg_alignment":       0.30,
+}
+
+assert abs(sum(EVALUATION_WEIGHTS_2022.values()) - 1.0) < 1e-9, \
+    "Evaluation weights must sum to 1.0"

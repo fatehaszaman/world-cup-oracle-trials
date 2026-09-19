@@ -50,6 +50,7 @@ from config import (
     POISSON_BASE_LAMBDA,
     POISSON_STRENGTH_SCALE,
     EXTRA_TIME_STRONGER_TEAM_BIAS,
+    REFEREE_BIAS_WEIGHT_2026,
 )
 from oracle.bracket import get_bracket, WC2026_GROUPS
 from oracle.schemas import SimulationConfig, TournamentOutcome
@@ -272,13 +273,26 @@ class TournamentSimulator:
                     team_a_strength=score_a,
                     team_b_strength=score_b,
                 )
-                # Re-normalise after applying bias
+                # Re-normalise the bias-adjusted probabilities, then blend
+                # them with the pre-bias base probabilities rather than
+                # fully replacing them. VAR (Video Assistant Referee) has
+                # been used at every World Cup since 2018 and materially
+                # reduces how much any single referee's tendencies can
+                # swing a match outcome, so for the 2026 tournament we
+                # dampen the referee-bias effect via
+                # config.REFEREE_BIAS_WEIGHT_2026 (0=ignored, 1=old
+                # full-override behavior) instead of letting it fully
+                # override the model's base win probability.
                 total = bias["adjusted_prob_a"] + bias["adjusted_prob_b"]
-                win_prob_a       = bias["adjusted_prob_a"] / total
-                win_prob_b       = bias["adjusted_prob_b"] / total
+                bias_prob_a = bias["adjusted_prob_a"] / total
+                bias_prob_b = bias["adjusted_prob_b"] / total
+
+                w = REFEREE_BIAS_WEIGHT_2026
+                win_prob_a       = (1.0 - w) * win_prob_a + w * bias_prob_a
+                win_prob_b       = (1.0 - w) * win_prob_b + w * bias_prob_b
                 draw_prob        = max(0.0, 1.0 - win_prob_a - win_prob_b)
                 referee_adjusted = True
-                referee_bias_mag = bias["bias_magnitude"]
+                referee_bias_mag = bias["bias_magnitude"] * w
             except Exception as e:
                 logger.debug("Referee bias skipped: %s", e)
 

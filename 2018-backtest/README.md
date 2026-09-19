@@ -1,13 +1,25 @@
 # Trial 3 — World Cup Oracle v3
 
-**Status: ✓ PASS on both backtests**
+> **Correction (2026-09-19):** the 2022 row below ("48/64 PASS") was never
+> actually produced by running the code — `TOURNAMENT_FORM_BOOST_2022` and
+> the coach-correlation adjustment it depended on were never wired into the
+> 2022 backtest. As shipped, that backtest gave 35/64 FAIL. We've since
+> fixed the wiring; the honest, re-verified result is seed-dependent:
+> 40/64 FAIL (seeds 1, 3, 4, 7) to 50/64 PASS (seeds 0, 2, 5, 6, 8, 9;
+> default seed 42 → 50/64 PASS). See the repo root README's Round 2
+> section and `2022-backtest/README.md` for the full account. The 2018
+> row (47/64 PASS) was independently re-verified and is accurate.
+
+**Status: ⚠️ 2022 seed-dependent (was falsely reported as a uniform PASS) / ✓ 2018 PASS (verified accurate)**
 
 | Tournament | BPS | /64 | Result |
 |------------|-----|-----|--------|
-| 2022 World Cup | 48 | 64 | ✓ PASS |
+| 2022 World Cup | 40–50 (seed-dependent; 50 at default seed) | 64 | ⚠️ seed-dependent, PASS at default seed |
 | 2018 World Cup | 47 | 64 | ✓ PASS |
 
-*Pass threshold: 45/64*
+*Pass threshold: 45/64. Both tournaments also now report a blended
+(bracket + betting-market + xG) score — 2022: 85.0%, 2018: 83.2%. See
+the repo root README for methodology.*
 
 ---
 

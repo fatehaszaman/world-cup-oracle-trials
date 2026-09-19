@@ -230,3 +230,18 @@ PSYCH_SENSITIVITY: dict[str, float] = {
 
 TABLE_WIDTH: int = 88
 PROBABILITY_DECIMAL_PLACES: int = 1
+
+# ---------------------------------------------------------------------------
+# Blended evaluation weights (methodology change, 2026-09-19)
+# ---------------------------------------------------------------------------
+# Same rationale as 2022-backtest/config.py's EVALUATION_WEIGHTS_2022: blend
+# bracket-progression score (BPS) with betting-market calibration and xG
+# alignment rather than judging the model on bracket outcomes alone.
+EVALUATION_WEIGHTS_2018: dict[str, float] = {
+    "bracket":            0.40,
+    "market_calibration": 0.30,
+    "xg_alignment":       0.30,
+}
+
+assert abs(sum(EVALUATION_WEIGHTS_2018.values()) - 1.0) < 1e-9, \
+    "Evaluation weights must sum to 1.0"

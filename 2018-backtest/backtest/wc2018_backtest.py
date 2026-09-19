@@ -386,6 +386,16 @@ class WC2018BacktestV3:
             report.append({**u, "upset_prob_pct": round(prob*100, 1), "flagged": prob >= 0.20})
         return {"upsets": report, "flagged": sum(1 for r in report if r["flagged"]), "total": len(report)}
 
+    def blended_evaluation_score(self) -> dict:
+        """
+        Mixed real-outcome / betting-market / xG evaluation (2026-09-19
+        methodology change). See oracle/blended_evaluation.py.
+        """
+        from oracle.blended_evaluation import blended_score
+        bps = self.bracket_progression_score()
+        bracket_fraction = bps["total"]["pts"] / 64
+        return blended_score(bracket_fraction, self.scores)
+
     def print_report(self) -> None:
         bps    = self.bracket_progression_score()
         upsets = self.upset_detection_report()
@@ -423,6 +433,18 @@ class WC2018BacktestV3:
         print(f"    Germany  base={g_base:.3f} → v3={g_v3:.3f}  (age-decay −{g_base-g_v3:.3f})")
         print(f"    Croatia  base={c_base:.3f} → v3={c_v3:.3f}  (shootout rating={SHOOTOUT_RATINGS['Croatia']})")
         print(f"    France   base={_BASE_SCORES_2018['France']:.3f} → v3={SQUAD_SCORES_2018['France']:.3f}")
+
+        blended = self.blended_evaluation_score()
+        print("\n  Blended evaluation (bracket + market calibration + xG alignment):")
+        print(f"    Bracket outcome score:    {blended['bracket_fraction']*100:5.1f}%  "
+              f"(weight {blended['weights']['bracket']:.2f})")
+        print(f"    Market calibration score: {blended['market_calibration']['score']*100:5.1f}%  "
+              f"(weight {blended['weights']['market_calibration']:.2f}, "
+              f"avg Brier {blended['market_calibration']['avg_brier']:.4f}, "
+              f"{blended['market_calibration']['n_matches']} matches)")
+        print(f"    xG-alignment score:       {blended['xg_alignment']['score']*100:5.1f}%  "
+              f"(weight {blended['weights']['xg_alignment']:.2f})")
+        print(f"    BLENDED SCORE:            {blended['blended_score']*100:5.1f}%")
         print()
 
     def print_cross_tournament_summary(self, bps_2022: int) -> None:
