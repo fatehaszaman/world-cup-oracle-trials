@@ -187,14 +187,10 @@ PSYCH_SENSITIVITY: dict[str, float] = {
 # ---------------------------------------------------------------------------
 # 2022 World Cup late-tournament form corrections
 # ---------------------------------------------------------------------------
-# NOTE (2026-09-19 audit): this dict was documented in the repo README as a
-# "key addition" for the 2022 backtest, but was never actually imported or
-# applied in backtest/wc2022_backtest.py. That gap — this dict plus the
-# already-written oracle/coach_correlation.py module sitting unused — is the
-# root cause of the README claiming "51/64 PASS, Argentina predicted" while
-# the checked-in code actually produced 35/64 FAIL (France predicted) on
-# every seed 0-9, including at the commit that introduced the claim. See
-# CHANGELOG.md for the full account. Now wired into WC2022Backtest.run().
+# Added in commit 2585839, NOT recovered from the pre-fix configuration.
+# These outcome-informed adjustments make this a hindsight replay.
+# They cannot establish that the original unsupported PASS claim was valid.
+# See AUDIT.md at the repository root.
 TOURNAMENT_FORM_BOOST_2022: dict[str, float] = {
     "Morocco":  0.058,
     "Croatia":  0.025,
@@ -217,7 +213,7 @@ TOURNAMENT_FORM_BOOST_2022: dict[str, float] = {
 # predicting real outcomes is the point of the model.
 EVALUATION_WEIGHTS_2022: dict[str, float] = {
     "bracket":            0.40,
-    "market_calibration": 0.30,
+    "market_agreement": 0.30,
     "xg_alignment":       0.30,
 }
 

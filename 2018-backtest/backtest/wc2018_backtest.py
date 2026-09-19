@@ -283,6 +283,7 @@ class WC2018BacktestV3:
         self.n      = n_simulations
         self.rng    = np.random.default_rng(seed)
         self.scores = SQUAD_SCORES_2018
+        self._results = None
 
     # Actual 2018 R16 bracket (group stage results used as input seed)
     _R16_BRACKET_2018 = [
@@ -297,6 +298,8 @@ class WC2018BacktestV3:
     ]
 
     def run(self) -> dict:
+        if self._results is not None:
+            return self._results
         champion_counts: dict[str, int] = {}
         r16_counts: dict[str, int]      = {}
         qf_counts:  dict[str, int]      = {}
@@ -331,13 +334,14 @@ class WC2018BacktestV3:
             champion_counts[champ] = champion_counts.get(champ, 0) + 1
 
         def probs(d): return {k: v/self.n for k,v in d.items()}
-        return {
+        self._results = {
             "r16_probs":      probs(r16_counts),
             "qf_probs":       probs(qf_counts),
             "sf_probs":       probs(sf_counts),
             "fin_probs":      probs(fin_counts),
             "champion_probs": probs(champion_counts),
         }
+        return self._results
 
     def bracket_progression_score(self) -> dict:
         results = self.run()
@@ -402,6 +406,7 @@ class WC2018BacktestV3:
 
         print("\n" + "=" * 68)
         print("  2018 World Cup Backtest — Trial 3 Validation Report")
+        print("  Hindsight knockout replay: 16 R16 points are supplied, not predicted.")
         print("=" * 68)
         print(f"\n  {'Stage':<10} {'Correct':>8} {'Max':>5} {'Pts':>6}")
         print("  " + "-" * 34)
@@ -435,22 +440,22 @@ class WC2018BacktestV3:
         print(f"    France   base={_BASE_SCORES_2018['France']:.3f} → v3={SQUAD_SCORES_2018['France']:.3f}")
 
         blended = self.blended_evaluation_score()
-        print("\n  Blended evaluation (bracket + market calibration + xG alignment):")
+        print("\n  Blended evaluation (bracket + market agreement + xG alignment):")
         print(f"    Bracket outcome score:    {blended['bracket_fraction']*100:5.1f}%  "
               f"(weight {blended['weights']['bracket']:.2f})")
-        print(f"    Market calibration score: {blended['market_calibration']['score']*100:5.1f}%  "
-              f"(weight {blended['weights']['market_calibration']:.2f}, "
-              f"avg Brier {blended['market_calibration']['avg_brier']:.4f}, "
-              f"{blended['market_calibration']['n_matches']} matches)")
+        print(f"    Market agreement index: {blended['market_agreement']['score']*100:5.1f}%  "
+              f"(weight {blended['weights']['market_agreement']:.2f}, "
+              f"market MSE {blended['market_agreement']['avg_mse']:.4f}, "
+              f"{blended['market_agreement']['n_matches']} matches)")
         print(f"    xG-alignment score:       {blended['xg_alignment']['score']*100:5.1f}%  "
               f"(weight {blended['weights']['xg_alignment']:.2f})")
-        print(f"    BLENDED SCORE:            {blended['blended_score']*100:5.1f}%")
+        print(f"    EXPLORATORY INDEX (not accuracy):            {blended['blended_score']*100:5.1f}%")
         print()
 
     def print_cross_tournament_summary(self, bps_2022: int) -> None:
         bps_2018 = self.bracket_progression_score()["total"]["pts"]
         print("\n  ┌─────────────────────────────────────────────────────────────┐")
-        print("  │  Cross-Tournament Validation Summary — All Trials           │")
+        print("  │  Replay summary; first three rows are historical baselines  │")
         print("  ├──────────────────────────┬───────┬──────┬───────┬──────────┤")
         print("  │  Tournament              │ Trial │  BPS │  /64  │  Pass?   │")
         print("  ├──────────────────────────┼───────┼──────┼───────┼──────────┤")

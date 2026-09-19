@@ -144,7 +144,7 @@ def implied_win_prob(team_a: str, team_b: str, scores: dict[str, float]) -> floa
     """
     Deterministic (pre-noise) model win probability for team_a over team_b,
     using the same logistic-on-strength-diff formula as simulate_match_var.
-    Added 2026-09-19 to support market-calibration evaluation (Brier score
+    Added 2026-09-19 to support market-agreement evaluation (Brier score
     against real betting-implied probabilities) for a single fixed pairing.
     """
     sa = scores.get(team_a, 0.5)

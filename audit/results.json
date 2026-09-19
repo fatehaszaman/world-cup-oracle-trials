@@ -1,0 +1,246 @@
+{
+  "interpretation": "In-sample exploratory diagnostics, not forecast accuracy",
+  "trials_2022": [
+    {
+      "seed": 42,
+      "n_simulations": 50000,
+      "bps": {
+        "r16": {
+          "correct": 12,
+          "max": 16,
+          "pts": 12
+        },
+        "qf": {
+          "correct": 6,
+          "max": 8,
+          "pts": 12
+        },
+        "sf": {
+          "correct": 2,
+          "max": 4,
+          "pts": 6
+        },
+        "fin": {
+          "correct": 2,
+          "max": 2,
+          "pts": 10
+        },
+        "win": {
+          "correct": 1,
+          "max": 1,
+          "pts": 10,
+          "predicted": "Argentina",
+          "actual": "Argentina"
+        },
+        "total": {
+          "pts": 50,
+          "max": 64
+        },
+        "pass": true
+      },
+      "evaluation": {
+        "bracket_fraction": 0.78125,
+        "market_agreement": {
+          "avg_mse": 0.009109230949909763,
+          "score": 0.9908907690500902,
+          "n_matches": 15,
+          "flat_baseline_mse": 0.07912282853031828,
+          "mse_skill_vs_flat": 0.8848722787201764
+        },
+        "xg_alignment": {
+          "agreement_rate": 0.8,
+          "score": 0.8,
+          "agreement_credit": 12.0,
+          "n_matches": 15,
+          "n_total_matches": 15,
+          "n_ties_excluded": 0
+        },
+        "weights": {
+          "bracket": 0.4,
+          "market_agreement": 0.3,
+          "xg_alignment": 0.3
+        },
+        "blended_score": 0.849767230715027,
+        "interpretation": "Exploratory in-sample index, not predictive accuracy"
+      }
+    }
+  ],
+  "trials_2018": {
+    "seed": 2018,
+    "n_simulations": 50000,
+    "bps": {
+      "r16": {
+        "correct": 16,
+        "max": 16,
+        "pts": 16
+      },
+      "qf": {
+        "correct": 5,
+        "max": 8,
+        "pts": 10
+      },
+      "sf": {
+        "correct": 2,
+        "max": 4,
+        "pts": 6
+      },
+      "fin": {
+        "correct": 1,
+        "max": 2,
+        "pts": 5
+      },
+      "win": {
+        "correct": 1,
+        "max": 1,
+        "pts": 10,
+        "predicted": "France",
+        "actual": "France"
+      },
+      "total": {
+        "pts": 47
+      },
+      "pass": true
+    },
+    "evaluation": {
+      "bracket_fraction": 0.734375,
+      "market_agreement": {
+        "avg_mse": 0.006776588119095181,
+        "score": 0.9932234118809048,
+        "n_matches": 15,
+        "flat_baseline_mse": 0.04009727793030641,
+        "mse_skill_vs_flat": 0.8309963052635729
+      },
+      "xg_alignment": {
+        "agreement_rate": 0.8571428571428571,
+        "score": 0.8571428571428571,
+        "agreement_credit": 12.0,
+        "n_matches": 14,
+        "n_total_matches": 15,
+        "n_ties_excluded": 1
+      },
+      "weights": {
+        "bracket": 0.4,
+        "market_agreement": 0.3,
+        "xg_alignment": 0.3
+      },
+      "blended_score": 0.8488598807071286,
+      "interpretation": "Exploratory in-sample index, not predictive accuracy"
+    }
+  },
+  "v1_2022": {
+    "seed": 42,
+    "n_simulations": 50000,
+    "bps": {
+      "r16": {
+        "correct": 12,
+        "max": 16,
+        "pts": 12
+      },
+      "qf": {
+        "correct": 6,
+        "max": 8,
+        "pts": 12
+      },
+      "sf": {
+        "correct": 2,
+        "max": 4,
+        "pts": 6
+      },
+      "fin": {
+        "correct": 2,
+        "max": 2,
+        "pts": 10
+      },
+      "win": {
+        "correct": 0,
+        "max": 1,
+        "pts": 0,
+        "predicted": "France",
+        "actual": "Argentina"
+      },
+      "total": {
+        "pts": 40,
+        "max": 64
+      },
+      "pass": false
+    }
+  },
+  "v2_2022": {
+    "seed": 42,
+    "n_simulations": 50000,
+    "bps": {
+      "r16": {
+        "correct": 12,
+        "max": 16,
+        "pts": 12
+      },
+      "qf": {
+        "correct": 6,
+        "max": 8,
+        "pts": 12
+      },
+      "sf": {
+        "correct": 2,
+        "max": 4,
+        "pts": 6
+      },
+      "fin": {
+        "correct": 2,
+        "max": 2,
+        "pts": 10
+      },
+      "win": {
+        "correct": 0,
+        "max": 1,
+        "pts": 0,
+        "predicted": "France",
+        "actual": "Argentina"
+      },
+      "total": {
+        "pts": 40,
+        "max": 64
+      },
+      "pass": false
+    }
+  },
+  "v2_2018": {
+    "seed": 2018,
+    "n_simulations": 50000,
+    "bps": {
+      "r16_correct": 14,
+      "r16_pts": 14,
+      "qf_correct": 4,
+      "qf_pts": 8,
+      "sf_correct": 1,
+      "sf_pts": 3,
+      "final_correct": 0,
+      "final_pts": 0,
+      "win_correct": 0,
+      "win_pts": 0,
+      "total_pts": 25,
+      "max_pts": 64,
+      "passed": false,
+      "predicted_winner": "Germany",
+      "actual_winner": "France",
+      "missed_r16": [
+        "Japan",
+        "Sweden"
+      ],
+      "missed_qf": [
+        "Croatia",
+        "Sweden",
+        "Russia",
+        "Uruguay"
+      ],
+      "missed_sf": [
+        "Belgium",
+        "England",
+        "Croatia"
+      ],
+      "missed_final": [
+        "France",
+        "Croatia"
+      ]
+    }
+  }
+}

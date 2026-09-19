@@ -1,9 +1,10 @@
 """
 backtest/wc2026_forecast.py — 2026 FIFA World Cup Tournament Forecast
 
-This is a FORWARD-LOOKING prediction, not a backtest. There is no known winner
-to validate against — this is the model's live forecast for the 2026 tournament
-hosted across USA, Canada, and Mexico (June–July 2026).
+This is a STATIC SCENARIO, not a live forecast or an outcome validation.
+The inputs and narrative assumptions below have not been independently
+refreshed. Do not present this file as a current verified tournament feed.
+See the repository-root AUDIT.md for limitations.
 
 Tournament format change: 48 teams → 12 groups of 4 → top 2 per group + 8 best
 third-place teams advance → Round of 32 (new stage) → R16 → QF → SF → Final.
@@ -242,8 +243,8 @@ class WC2026Forecast:
       - Shootout specialist ratings
       - Round of 32 stage (new in 2026 format)
 
-    No known winner to validate against — outputs championship probabilities
-    and bracket progression odds as a live prediction.
+    Outputs scenario probabilities, not a verified live prediction.
+    This engine has no referee-assignment input.
     """
 
     n_simulations: int = 50_000
@@ -361,7 +362,7 @@ class WC2026Forecast:
         r = self._results
         print("\n" + "=" * 70)
         print("  2026 FIFA World Cup — Tournament Forecast")
-        print("  Model: VaR/CVaR noise · 2026-era squads · confirmed groups")
+        print("  Model: VaR/CVaR noise; static, unverified scenario inputs")
         print(f"  Simulations: {self.n_simulations:,}  |  Seed: {self.seed}")
         print("=" * 70)
         print(f"\n  {'Team':<22} {'R32%':>5} {'R16%':>5} {'QF%':>5} {'SF%':>5} {'Final%':>6} {'Win%':>5}")
@@ -380,7 +381,7 @@ class WC2026Forecast:
 
         pred_winner = max(r["champion_probs"], key=lambda t: r["champion_probs"][t])
         print(f"\n  ► Predicted champion: {pred_winner}")
-        print("  ► (No known result — this is a live forecast)")
+        print("  Static scenario only; not a live forecast or validated accuracy.")
         print("=" * 70 + "\n")
 
 

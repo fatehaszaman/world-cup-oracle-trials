@@ -235,11 +235,11 @@ PROBABILITY_DECIMAL_PLACES: int = 1
 # Blended evaluation weights (methodology change, 2026-09-19)
 # ---------------------------------------------------------------------------
 # Same rationale as 2022-backtest/config.py's EVALUATION_WEIGHTS_2022: blend
-# bracket-progression score (BPS) with betting-market calibration and xG
+# bracket-progression score (BPS) with betting-market agreement and xG
 # alignment rather than judging the model on bracket outcomes alone.
 EVALUATION_WEIGHTS_2018: dict[str, float] = {
     "bracket":            0.40,
-    "market_calibration": 0.30,
+    "market_agreement": 0.30,
     "xg_alignment":       0.30,
 }
 

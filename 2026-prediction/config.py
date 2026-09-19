@@ -89,15 +89,11 @@ EXTRA_TIME_STRONGER_TEAM_BIAS: float = 0.55
 # ---------------------------------------------------------------------------
 # Referee bias dampening (2026 methodology change, 2026-09-19)
 # ---------------------------------------------------------------------------
-# Referee bias is a real, documented effect (see oracle/referee_bias.py), but
-# by the 2026 World Cup, VAR (Video Assistant Referee) has been in use at
-# every World Cup since 2018 and has materially reduced the on-field impact
-# of individual referee tendencies — marginal offside/penalty/red-card calls
-# that used to hinge entirely on one referee's judgment are now reviewed.
-# Previously simulate_match() fully replaced the base win probability with
-# the referee-bias-adjusted one; it now blends the two, weighted by this
-# constant, so referee bias nudges the estimate rather than overriding it.
-# 0.0 = referee bias ignored entirely, 1.0 = old (pre-VAR-aware) behavior.
+# Modeling assumption motivated by a smaller referee effect in a VAR setting.
+# This number has NOT been estimated from VAR-era match data.
+# Applies only to TournamentSimulator.simulate_match when a referee is supplied.
+# The separate WC2026Forecast engine has no referee-assignment input.
+# 0 = no adjustment, 1 = full adjustment within decisive probability mass.
 REFEREE_BIAS_WEIGHT_2026: float = 0.35
 
 # ---------------------------------------------------------------------------

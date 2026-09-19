@@ -279,9 +279,8 @@ class WC2022Backtest:
         rng = np.random.default_rng(self.seed)
         scores = _TEAM_STRENGTH_2022.copy()
 
-        # Apply late-tournament form corrections (documented since the
-        # original trial-2 README but never wired in until the 2026-09-19
-        # audit — see config.TOURNAMENT_FORM_BOOST_2022 and CHANGELOG.md).
+        # Retrospective form boosts added in commit 2585839.
+        # This is a hindsight replay, not a pre-tournament validation.
         for team, boost in config.TOURNAMENT_FORM_BOOST_2022.items():
             if team in scores:
                 scores[team] = max(0.0, min(1.0, scores[team] + boost))
@@ -460,7 +459,7 @@ class WC2022Backtest:
         Mixed real-outcome / betting-market / xG evaluation (2026-09-19
         methodology change). See oracle/blended_evaluation.py for rationale:
         pure bracket-progression scoring is noisy, so this blends it with
-        market-calibration (Brier score vs real betting odds) and xG-based
+        market-agreement (MSE vs conditional market probabilities) and xG-based
         match-dominance agreement.
         """
         if self._results is None:
@@ -477,6 +476,7 @@ class WC2022Backtest:
 
         print("\n" + "=" * 64)
         print("  2022 World Cup Backtest — Validation Report")
+        print("  Hindsight-adjusted replay; not held-out predictive accuracy.")
         print("=" * 64)
 
         print(f"\n{'Stage':<12} {'Correct':>8} {'Max':>5} {'Pts':>6}")
@@ -500,18 +500,18 @@ class WC2022Backtest:
                   f"({u['stage']:6s})  model: {u['upset_prob_pct']:5.1f}%")
 
         blended = self.blended_evaluation_score()
-        print("Blended evaluation (bracket + market calibration + xG alignment):")
+        print("Blended evaluation (bracket + market agreement + xG alignment):")
         print(f"  Bracket outcome score:    {blended['bracket_fraction']*100:5.1f}%  "
               f"(weight {blended['weights']['bracket']:.2f})")
-        print(f"  Market calibration score: {blended['market_calibration']['score']*100:5.1f}%  "
-              f"(weight {blended['weights']['market_calibration']:.2f}, "
-              f"avg Brier {blended['market_calibration']['avg_brier']:.4f}, "
-              f"{blended['market_calibration']['n_matches']} matches)")
+        print(f"  Market agreement index: {blended['market_agreement']['score']*100:5.1f}%  "
+              f"(weight {blended['weights']['market_agreement']:.2f}, "
+              f"market MSE {blended['market_agreement']['avg_mse']:.4f}, "
+              f"{blended['market_agreement']['n_matches']} matches)")
         print(f"  xG-alignment score:       {blended['xg_alignment']['score']*100:5.1f}%  "
               f"(weight {blended['weights']['xg_alignment']:.2f}, "
               f"{blended['xg_alignment']['agreement_rate']*blended['xg_alignment']['n_matches']:.0f}/"
               f"{blended['xg_alignment']['n_matches']} matches agree)")
-        print(f"  BLENDED SCORE:            {blended['blended_score']*100:5.1f}%")
+        print(f"  EXPLORATORY INDEX (not accuracy):            {blended['blended_score']*100:5.1f}%")
 
         print("\n" + "=" * 64 + "\n")
 
