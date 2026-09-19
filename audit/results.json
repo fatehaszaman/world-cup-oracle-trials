@@ -228,18 +228,18 @@
       ],
       "missed_qf": [
         "Croatia",
-        "Sweden",
         "Russia",
+        "Sweden",
         "Uruguay"
       ],
       "missed_sf": [
         "Belgium",
-        "England",
-        "Croatia"
+        "Croatia",
+        "England"
       ],
       "missed_final": [
-        "France",
-        "Croatia"
+        "Croatia",
+        "France"
       ]
     }
   }

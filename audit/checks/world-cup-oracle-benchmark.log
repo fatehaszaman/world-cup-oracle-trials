@@ -1,0 +1,9 @@
+Simulations: 16; elapsed: 0.052s
+Runs/second: 308.6
+Peak traced Python allocations: 0.33 MiB (not full process RSS)
+        team  champion_prob
+South Africa         0.1250
+       Ghana         0.1250
+   Argentina         0.0625
+     Belgium         0.0625
+     Germany         0.0625

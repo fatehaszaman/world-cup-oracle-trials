@@ -33,6 +33,33 @@ correction should be visible, not hidden by deleting the failure history.
 - Replaced stale live-forecast and all-tests-passing claims with explicit
   limitations. Added focused regression tests and a result-generation script.
 
+## 2026-09-19: Full executable follow-up
+
+The initial consistency audit did not establish full-project correctness.
+The follow-up checks every suite, package imports, compilation, and the three
+example/benchmark entry points in all five code folders, with logs retained.
+
+- Fixed generic knockout completion, first-round byes, elimination uniqueness,
+  and round-reach labels. The old loop could select a champion without playing
+  the last match. Added n-minus-one elimination tests without tuning team odds.
+- Synchronized shared simulator fixes into older trial folders, while keeping
+  the historical replay engines and 2026 referee weight distinct.
+- Migrated stale API tests; replaced inapplicable copied 2022 tests in the
+  2018/2026 folders with local mechanical invariants. Corrected tied ranking
+  in the bottom-three test without relaxing its numerical cutoff.
+- Fixed missing imports/constants and example entry points. Removed hardcoded
+  probability tables and invented confidence intervals; output is now computed.
+- Repaired benchmark API/memory units and removed an unsupported universal SLA.
+- Removed unsupported forecast narratives rather than assert current facts
+  that were not checked. Disclosed the generic scenario's nonofficial format
+  and missing strength inputs.
+- Recorded 193 passes and 28 failures across full suites, plus seven passing
+  publication checks. No collection errors or skipped tests remain; missing
+  inputs and unresolved model hypotheses still prevent an all-green claim.
+
+These changes are engineering/documentation corrections, not new evidence of
+predictive skill. Details and reproducible commands are in [AUDIT.md](AUDIT.md).
+
 ## Earlier iterations
 
 - Original `world-cup-oracle`: 2022 BPS 40/64, below the historical threshold.

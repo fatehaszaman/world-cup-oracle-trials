@@ -9,27 +9,9 @@ See the repository-root AUDIT.md for limitations.
 Tournament format change: 48 teams → 12 groups of 4 → top 2 per group + 8 best
 third-place teams advance → Round of 32 (new stage) → R16 → QF → SF → Final.
 
-Groups confirmed: FIFA draw held December 5, 2025 at the Kennedy Center, DC.
-Sources: FIFA.com draw results, NBC Sports, ESPN, Wikipedia
-
-2026 WC Key storylines feeding model signals:
-  Argentina  — defending champions; Messi retirement after 2026 (announced);
-               post-2022 squad integration ongoing; Scaloni continuity
-  France     — Mbappé-led peak generation; Deschamps stepped down Nov 2024;
-               new coach Luis Enrique (from PSG) brings tactical shift
-  England    — Bellingham/Saka/Foden prime window; new manager after Southgate
-               resigned post-Euro 2024; Thomas Tuchel appointed Jan 2025
-  Spain      — EURO 2024 winners; Yamal/Pedri/Morata generation at full peak;
-               strong squad continuity
-  Germany    — EURO 2024 hosts (SF exit); Nagelsmann-led rebuild with younger
-               squad (Wirtz/Musiala at prime); home territory advantage (CONCACAF
-               host USA adjacent)
-  Brazil     — New manager Dorival Júnior; Vinicius/Rodrygo/Endrick core;
-               redemption after 2022 QF exit
-  Morocco    — Regragui continuity; Hakimi/Amrabat leadership; 2022 SF legacy
-               motivates record-attempt
-  Portugal   — Post-Ronaldo era under Roberto Martínez; Ramos/Félix/Conceição
-               new generation; Ronaldo retired from international after 2026 draw
+The prior coach/retirement narratives and exact-ranking claims were not
+verified and have been withdrawn. The numeric scenario inputs are retained
+for reproducibility, not represented as empirically sourced current ratings.
 
 Match format notes:
   - 48 teams, 12 groups (Groups A–L)
@@ -51,8 +33,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from oracle.var_noise import simulate_match_var, simulate_group_var, VAR_BOUND, VAR_CONFIDENCE, _SIGMA
 
 # ---------------------------------------------------------------------------
-# 2026 WC Groups — confirmed by FIFA draw, December 5 2025
-# Source: FIFA.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/final-draw-results
+# Static group assumptions. Official status has not been independently verified.
 # ---------------------------------------------------------------------------
 WC2026_GROUPS: dict[str, list[str]] = {
     "A": ["Mexico",        "South Africa",  "South Korea",  "Czech Republic"],
@@ -74,85 +55,60 @@ ALL_2026_TEAMS: list[str] = [t for teams in WC2026_GROUPS.values() for t in team
 # ---------------------------------------------------------------------------
 # 2026-era composite squad scores (0–1 scale)
 # ---------------------------------------------------------------------------
-# Sources:
-#   Squad market values: Transfermarkt Jan 2026 national team valuations
-#   FIFA rankings: Dec 2025 official rankings (draw seedings)
-#   Form signals: EURO 2024, Copa América 2024, Nations League 2024-25
-#   Coach continuity: updated post-2022 (Enrique→France, Tuchel→England,
-#                     Dorival→Brazil, Martínez→Portugal)
-#
-# Adjustment rationale per key team:
-#   Spain      +0.015  EURO 2024 winners; Yamal 17yo peak; Pedri/Gavi fit
-#   Germany    +0.018  EURO 2024 SF run; Wirtz/Musiala both in prime;
-#                      Nagelsmann full rebuild complete
-#   England    +0.010  Bellingham/Saka/Foden all 22-24, peaking; Tuchel system
-#   Argentina  -0.010  Post-Messi era begins; Di María retired; some squad
-#                      transition but Scaloni continuity maintains floor
-#   Brazil     +0.012  Vinicius/Rodrygo/Endrick top-3 club form; Dorival
-#                      tactical stability post-Tite reset
-#   France     -0.008  Luis Enrique new (less than 2yr by tournament);
-#                      Mbappé club pressure (Real Madrid contract situation)
-#   Portugal   -0.015  Ronaldo retired; Martínez new manager; rebuilding
-#                      around Ramos/Félix/B.Fernandes but deeper drop
-#   Morocco    +0.020  2022 SF legacy; Regragui 4yr tenure by 2026;
-#                      Hakimi/Amrabat/Bounou all at confirmed elite level
-#   Colombia   +0.015  Copa América 2024 runners-up; James/Díaz/Arias peak
-#   Netherlands +0.008 Post-Van Gaal rebuild under De Boer 2.0; Gakpo/Van Dijk
-#   Croatia    -0.015  Modrić retired; post-golden-gen transition
-#   Belgium    -0.020  Golden gen retired (Hazard, Lukaku reduced); De Bruyne 33
+# Manually assigned scenario scores, not verified current rankings or valuations.
+# Unsupported coach, retirement, and dated-form rationales were withdrawn.
 # ---------------------------------------------------------------------------
 _SQUAD_SCORES_2026: dict[str, float] = {
-    # ── Tier 1: title contenders ──────────────────────────────────────────
-    "Spain":          0.905,   # FIFA #1; EURO 2024 winners; Yamal era
-    "Argentina":      0.888,   # FIFA #2; defending champions; Scaloni system
-    "France":         0.880,   # FIFA #3; Mbappé + depth; new manager discount
-    "England":        0.872,   # FIFA #4; EURO 2024 final; Bellingham prime
-    "Brazil":         0.868,   # FIFA #5; Vinicius/Rodrygo/Endrick; reset
-    "Portugal":       0.855,   # FIFA #6; Ramos-led; post-Ronaldo adjustment
-    "Netherlands":    0.848,   # FIFA #7; Gakpo/Van Dijk; growing cohesion
-    "Germany":        0.858,   # FIFA #9; Wirtz/Musiala; EURO 2024 SF
-    # ── Tier 2: dark horses ───────────────────────────────────────────────
-    "Belgium":        0.800,   # FIFA #8; De Bruyne 33; generation turning
-    "Morocco":        0.792,   # FIFA #11; 2022 SF legacy; peak window
-    "Croatia":        0.762,   # FIFA #10; post-Modrić; Kovačić/Gvardiol core
-    "Colombia":       0.778,   # FIFA #13; Copa 2024 runners-up; James peak
-    "Uruguay":        0.748,   # FIFA #16; Núñez/Valverde; strong qualifying
-    "Switzerland":    0.738,   # FIFA #17; consistent Xhaka-era; tough group
-    "Japan":          0.730,   # FIFA #18; strong qualifying; high-press peak
-    "Senegal":        0.722,   # FIFA #19; Diatta/Sarr/Dia attack
-    "Iran":           0.690,   # FIFA #20; strong AFC qualifying winner
-    "South Korea":    0.710,   # FIFA #22; Son still active; young core
-    "Ecuador":        0.695,   # FIFA #23; Caicedo/Ibarra; 2nd in CONMEBOL qual
-    "Austria":        0.688,   # FIFA #24; Alaba + Sabitzer; Nations League A
-    "Australia":      0.672,   # FIFA #26; Irvine/Hrustic; solid AFC run
-    "Mexico":         0.668,   # FIFA #15 (co-host boost); home crowd advantage
-    "Norway":         0.665,   # FIFA #29; Haaland-led; first WC since 1998
-    "Canada":         0.658,   # FIFA #27 (co-host); Davies/David; 2nd WC
-    "Panama":         0.620,   # FIFA #30; CONCACAF qualifier winner
-    "Egypt":          0.618,   # FIFA #34; Salah farewell motivation
-    "Algeria":        0.615,   # FIFA #35; Mahrez/Bennacer; strong CAF run
-    "Scotland":       0.608,   # FIFA #36; McTominay/Robertson; first WC since 1998
-    "Paraguay":       0.605,   # FIFA #39; scrappy CONMEBOL qualifiers
-    "Tunisia":        0.598,   # FIFA #40; experienced CAF campaigners
-    "Ivory Coast":    0.595,   # FIFA #42; Zaha-era transition; AFCON 2024 champs
-    "Sweden":         0.590,   # UEFA playoff B winners; returning after 2018
-    "Turkey":         0.585,   # UEFA playoff C winners; Çalhanoğlu-led
-    "United States":  0.660,   # FIFA #14 (co-host); Pulisic/Reyna/McKennie
-    "Saudi Arabia":   0.570,   # FIFA #60; domestic league investment signal
-    "South Africa":   0.558,   # FIFA #61; home-region advantage CAF
+
+    "Spain":          0.905,
+    "Argentina":      0.888,
+    "France":         0.880,
+    "England":        0.872,
+    "Brazil":         0.868,
+    "Portugal":       0.855,
+    "Netherlands":    0.848,
+    "Germany":        0.858,
+
+    "Belgium":        0.800,
+    "Morocco":        0.792,
+    "Croatia":        0.762,
+    "Colombia":       0.778,
+    "Uruguay":        0.748,
+    "Switzerland":    0.738,
+    "Japan":          0.730,
+    "Senegal":        0.722,
+    "Iran":           0.690,
     "South Korea":    0.710,
-    "Uzbekistan":     0.520,   # debut; AFC qualifier; unknown ceiling
-    "Qatar":          0.500,   # through qualifying; limited squad depth
-    "Cape Verde":     0.512,   # first-time qualifier; CAF qualifier winner
-    "DR Congo":       0.518,   # AFCON contender; first WC since 1974
-    "Ghana":          0.510,   # FIFA #72; experienced WC returner
-    "Jordan":         0.490,   # debut; AFC qualifier runner-up
-    "Haiti":          0.478,   # CONCACAF; first WC since 1974
-    "New Zealand":    0.462,   # OFC; limited top-level competition
-    "Curacao":        0.445,   # debut; smallest nation to qualify
-    "Bosnia":         0.552,   # UEFA; first major tournament since 2014
-    "Czech Republic": 0.568,   # UEFA; returning after 2006
-    "Iraq":           0.498,   # first WC since 1986
+    "Ecuador":        0.695,
+    "Austria":        0.688,
+    "Australia":      0.672,
+    "Mexico":         0.668,
+    "Norway":         0.665,
+    "Canada":         0.658,
+    "Panama":         0.620,
+    "Egypt":          0.618,
+    "Algeria":        0.615,
+    "Scotland":       0.608,
+    "Paraguay":       0.605,
+    "Tunisia":        0.598,
+    "Ivory Coast":    0.595,
+    "Sweden":         0.590,
+    "Turkey":         0.585,
+    "United States":  0.660,
+    "Saudi Arabia":   0.570,
+    "South Africa":   0.558,
+    "Uzbekistan":     0.520,
+    "Qatar":          0.500,
+    "Cape Verde":     0.512,
+    "DR Congo":       0.518,
+    "Ghana":          0.510,
+    "Jordan":         0.490,
+    "Haiti":          0.478,
+    "New Zealand":    0.462,
+    "Curacao":        0.445,
+    "Bosnia":         0.552,
+    "Czech Republic": 0.568,
+    "Iraq":           0.498,
 }
 
 # ---------------------------------------------------------------------------
@@ -237,8 +193,8 @@ class WC2026Forecast:
     2026 FIFA World Cup forward-looking tournament simulation.
 
     Simulates the full 48-team, 12-group tournament using:
-      - Confirmed group draw (FIFA Dec 5 2025)
-      - 2026-era squad composite scores
+      - Static group assumptions (not independently verified)
+      - Manually assigned scenario strengths
       - VaR/CVaR bounded match noise (3% VaR, σ≈0.016)
       - Shootout specialist ratings
       - Round of 32 stage (new in 2026 format)

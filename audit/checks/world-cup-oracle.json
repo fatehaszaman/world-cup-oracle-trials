@@ -1,0 +1,80 @@
+{
+  "suite": "world-cup-oracle",
+  "python": "3.14.3",
+  "checked_at_utc": "2026-09-19T05:04:53.584278+00:00",
+  "checks": {
+    "pytest": {
+      "returncode": 1,
+      "log": "world-cup-oracle-pytest.log",
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "--disable-warnings",
+        "--junitxml=/home/user/workspace/repos/world-cup-oracle-trials/audit/checks/world-cup-oracle.xml"
+      ]
+    },
+    "compile": {
+      "returncode": 0,
+      "log": "world-cup-oracle-compile.log",
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "oracle",
+        "backtest",
+        "data",
+        "examples",
+        "scripts"
+      ]
+    },
+    "imports": {
+      "returncode": 0,
+      "log": "world-cup-oracle-imports.log",
+      "command": [
+        "python",
+        "-c",
+        "import importlib,pkgutil; modules=[m.name for n in ('oracle','data','backtest') for m in pkgutil.walk_packages(importlib.import_module(n).__path__, n+'.')]; [importlib.import_module(n) for n in modules]; print('Imported', len(modules), 'modules successfully')"
+      ]
+    },
+    "prediction": {
+      "returncode": 0,
+      "log": "world-cup-oracle-prediction.log",
+      "command": [
+        "python",
+        "examples/run_prediction.py",
+        "--simulations",
+        "16"
+      ]
+    },
+    "backtest": {
+      "returncode": 0,
+      "log": "world-cup-oracle-backtest.log",
+      "command": [
+        "python",
+        "examples/run_backtest.py",
+        "--simulations",
+        "16"
+      ]
+    },
+    "benchmark": {
+      "returncode": 0,
+      "log": "world-cup-oracle-benchmark.log",
+      "command": [
+        "python",
+        "scripts/benchmark.py",
+        "--simulations",
+        "16"
+      ]
+    }
+  },
+  "pytest": {
+    "tests": 42,
+    "failures": 8,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 34
+  }
+}

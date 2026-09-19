@@ -1,0 +1,31 @@
+HISTORICAL REPLAY: in-sample scores are not predictive validation.
+
+================================================================
+  2022 World Cup Backtest — Validation Report
+================================================================
+
+Stage         Correct   Max    Pts
+------------------------------------
+  R16              10    16     10
+  QF                3     8      6
+  SF                1     4      3
+  Final             0     2      0
+  Winner            0     1      0
+------------------------------------
+  TOTAL                  64     19   ✗ FAIL
+
+Winner prediction: Tunisia               Actual: Argentina
+
+Upset detection: 2/8 flagged correctly
+  ⚑ Saudi Arabia    vs Argentina       (group )  model:  50.0%
+  ⚑ Japan           vs Germany         (group )  model:  50.0%
+    Japan           vs Spain           (group )  model:   0.0%
+    Morocco         vs Belgium         (group )  model:   0.0%
+    Morocco         vs Spain           (r16   )  model:   0.0%
+    Morocco         vs Portugal        (qf    )  model:   0.0%
+    Croatia         vs Brazil          (qf    )  model:   0.0%
+    Australia       vs Denmark         (group )  model:   0.0%
+
+================================================================
+
+No proposed weight change has been applied or revalidated by this example.

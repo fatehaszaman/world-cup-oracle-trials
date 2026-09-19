@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="8" skipped="0" tests="42" time="2.995" timestamp="2026-09-19T05:04:54.735683+00:00" hostname="space-sandbox"><testcase classname="tests.regression.test_regression.TestRegressionMatchProbabilities" name="test_argentina_beats_qatar_group" time="0.004" /><testcase classname="tests.regression.test_regression.TestRegressionMatchProbabilities" name="test_france_beats_australia_group" time="0.004"><failure message="AssertionError: France P(win) vs Australia = 0.62, expected &gt;0.65&#10;assert 0.6246 &gt; 0.65">self = &lt;tests.regression.test_regression.TestRegressionMatchProbabilities object at 0x7f5e7997a210&gt;
+
+    def test_france_beats_australia_group(self):
+        """France vs Australia: France P(win) should be &gt; 0.65."""
+        p = _win_prob("France", "Australia")
+&gt;       assert p &gt; 0.65, f"France P(win) vs Australia = {p:.2f}, expected &gt;0.65"
+E       AssertionError: France P(win) vs Australia = 0.62, expected &gt;0.65
+E       assert 0.6246 &gt; 0.65
+
+tests/regression/test_regression.py:66: AssertionError</failure></testcase><testcase classname="tests.regression.test_regression.TestRegressionMatchProbabilities" name="test_brazil_beats_south_korea_r16" time="0.004"><failure message="AssertionError: Brazil P(win) = 0.60, expected &gt;0.65&#10;assert 0.5972 &gt; 0.65">self = &lt;tests.regression.test_regression.TestRegressionMatchProbabilities object at 0x7f5e7973c2b0&gt;
+
+    def test_brazil_beats_south_korea_r16(self):
+        """Brazil vs South Korea (R16): Brazil P(win) should be &gt; 0.65."""
+        p = _win_prob("Brazil", "South Korea")
+&gt;       assert p &gt; 0.65, f"Brazil P(win) = {p:.2f}, expected &gt;0.65"
+E       AssertionError: Brazil P(win) = 0.60, expected &gt;0.65
+E       assert 0.5972 &gt; 0.65
+
+tests/regression/test_regression.py:71: AssertionError</failure></testcase><testcase classname="tests.regression.test_regression.TestRegressionMatchProbabilities" name="test_netherlands_beats_usa_r16" time="0.004" /><testcase classname="tests.regression.test_regression.TestRegressionMatchProbabilities" name="test_portugal_beats_switzerland_r16" time="0.004"><failure message="AssertionError: Portugal P(win) = 0.55, expected &gt;0.60&#10;assert 0.5536 &gt; 0.6">self = &lt;tests.regression.test_regression.TestRegressionMatchProbabilities object at 0x7f5e799b1910&gt;
+
+    def test_portugal_beats_switzerland_r16(self):
+        """Portugal 6-1 Switzerland: Portugal P(win) should be &gt; 0.60."""
+        p = _win_prob("Portugal", "Switzerland")
+&gt;       assert p &gt; 0.60, f"Portugal P(win) = {p:.2f}, expected &gt;0.60"
+E       AssertionError: Portugal P(win) = 0.55, expected &gt;0.60
+E       assert 0.5536 &gt; 0.6
+
+tests/regression/test_regression.py:81: AssertionError</failure></testcase><testcase classname="tests.regression.test_regression.TestRegressionMatchProbabilities" name="test_argentina_beats_france_final" time="0.014" /><testcase classname="tests.regression.test_regression.TestRegressionMatchProbabilities" name="test_upset_saudi_vs_argentina" time="0.004"><failure message="AssertionError: Saudi Arabia P(win) = 0.37, expected [0.05, 0.35]&#10;assert 0.3682 &lt;= 0.35">self = &lt;tests.regression.test_regression.TestRegressionMatchProbabilities object at 0x7f5e799d0270&gt;
+
+    def test_upset_saudi_vs_argentina(self):
+        """Saudi Arabia vs Argentina: underdog P(win) should be in [0.05, 0.25]."""
+        p = _win_prob("Saudi Arabia", "Argentina")
+&gt;       assert 0.05 &lt;= p &lt;= 0.35, \
+            f"Saudi Arabia P(win) = {p:.2f}, expected [0.05, 0.35]"
+E       AssertionError: Saudi Arabia P(win) = 0.37, expected [0.05, 0.35]
+E       assert 0.3682 &lt;= 0.35
+
+tests/regression/test_regression.py:93: AssertionError</failure></testcase><testcase classname="tests.regression.test_regression.TestRegressionMatchProbabilities" name="test_upset_japan_vs_germany" time="0.004" /><testcase classname="tests.regression.test_regression.TestRegressionMatchProbabilities" name="test_upset_morocco_vs_spain" time="0.004" /><testcase classname="tests.regression.test_regression.TestRegressionMatchProbabilities" name="test_close_match_croatia_vs_brazil" time="0.003" /><testcase classname="tests.regression.test_regression.TestTournamentRegression" name="test_argentina_winner_in_top2" time="0.602" /><testcase classname="tests.regression.test_regression.TestTournamentRegression" name="test_france_finalist_in_top2" time="0.000" /><testcase classname="tests.regression.test_regression.TestTournamentRegression" name="test_qatar_lowest_champion_prob" time="0.000" /><testcase classname="tests.test_monte_carlo.TestSingleMatchSimulation" name="test_probabilities_sum_to_one" time="0.004" /><testcase classname="tests.test_monte_carlo.TestSingleMatchSimulation" name="test_stronger_team_wins_more_often" time="0.000"><failure message="AssertionError: Qatar is absent from the scorer input table&#10;assert 'Qatar' in {'France': 0.700631, 'Germany': 0.695454, 'England': 0.67269, 'Brazil': 0.652878, ...}">self = &lt;tests.test_monte_carlo.TestSingleMatchSimulation object at 0x7f5e64275f90&gt;
+team_scores = {'France': 0.700631, 'Germany': 0.695454, 'England': 0.67269, 'Brazil': 0.652878, ...}
+
+    def test_stronger_team_wins_more_often(self, team_scores):
+        # Original &gt;50% expectation is retained, not relaxed. The absent
+        # Qatar input is surfaced rather than silently testing a fallback.
+&gt;       assert "Qatar" in team_scores, "Qatar is absent from the scorer input table"
+E       AssertionError: Qatar is absent from the scorer input table
+E       assert 'Qatar' in {'France': 0.700631, 'Germany': 0.695454, 'England': 0.67269, 'Brazil': 0.652878, ...}
+
+tests/test_monte_carlo.py:40: AssertionError</failure></testcase><testcase classname="tests.test_monte_carlo.TestSingleMatchSimulation" name="test_probabilities_in_unit_interval" time="0.001" /><testcase classname="tests.test_monte_carlo.TestTournamentSimulation" name="test_1000_run_returns_all_scenario_teams" time="0.555" /><testcase classname="tests.test_monte_carlo.TestTournamentSimulation" name="test_champion_probs_sum_to_one" time="0.283" /><testcase classname="tests.test_monte_carlo.TestTournamentSimulation" name="test_strong_teams_have_higher_champion_prob" time="1.109" /><testcase classname="tests.test_monte_carlo.TestRefereeBiasAdjustment" name="test_referee_bias_modifies_probabilities" time="0.002" /><testcase classname="tests.test_monte_carlo.TestRefereeBiasAdjustment" name="test_zero_bias_matches_baseline" time="0.002" /><testcase classname="tests.test_monte_carlo" name="test_knockout_eliminates_every_nonchampion_once[2]" time="0.001" /><testcase classname="tests.test_monte_carlo" name="test_knockout_eliminates_every_nonchampion_once[3]" time="0.001" /><testcase classname="tests.test_monte_carlo" name="test_knockout_eliminates_every_nonchampion_once[8]" time="0.001" /><testcase classname="tests.test_monte_carlo" name="test_knockout_eliminates_every_nonchampion_once[16]" time="0.001" /><testcase classname="tests.test_monte_carlo" name="test_knockout_eliminates_every_nonchampion_once[24]" time="0.002" /><testcase classname="tests.test_monte_carlo" name="test_knockout_eliminates_every_nonchampion_once[32]" time="0.001" /><testcase classname="tests.test_monte_carlo" name="test_eight_team_bracket_records_reaching_not_winning_round" time="0.001" /><testcase classname="tests.test_team_strength.TestCompositeScoreRange" name="test_returns_float" time="0.001" /><testcase classname="tests.test_team_strength.TestCompositeScoreRange" name="test_in_unit_interval" time="0.000" /><testcase classname="tests.test_team_strength.TestCompositeScoreRange" name="test_argentina_composite_not_none" time="0.000" /><testcase classname="tests.test_team_strength.TestCompositeScoreRange" name="test_all_32_teams_present" time="0.000" /><testcase classname="tests.test_team_strength.TestTopTeamOrdering" name="test_argentina_in_top5" time="0.000" /><testcase classname="tests.test_team_strength.TestTopTeamOrdering" name="test_brazil_in_top5" time="0.000" /><testcase classname="tests.test_team_strength.TestTopTeamOrdering" name="test_france_in_top5" time="0.000" /><testcase classname="tests.test_team_strength.TestTopTeamOrdering" name="test_qatar_near_bottom" time="0.000"><failure message="AssertionError: Legacy expectation requires Qatar; input table does not include it&#10;assert 'Qatar' in {'France': 0.700631, 'Germany': 0.695454, 'England': 0.67269, 'Brazil': 0.652878, ...}">self = &lt;tests.test_team_strength.TestTopTeamOrdering object at 0x7f5e64140fc0&gt;
+all_scores = {'France': 0.700631, 'Germany': 0.695454, 'England': 0.67269, 'Brazil': 0.652878, ...}
+
+    def test_qatar_near_bottom(self, all_scores):
+&gt;       assert "Qatar" in all_scores, "Legacy expectation requires Qatar; input table does not include it"
+E       AssertionError: Legacy expectation requires Qatar; input table does not include it
+E       assert 'Qatar' in {'France': 0.700631, 'Germany': 0.695454, 'England': 0.67269, 'Brazil': 0.652878, ...}
+
+tests/test_team_strength.py:81: AssertionError</failure></testcase><testcase classname="tests.test_team_strength.TestTopTeamOrdering" name="test_strong_teams_above_weak" time="0.000"><failure message="AssertionError: Legacy expectation requires Qatar; input table does not include it&#10;assert 'Qatar' in {'France': 0.700631, 'Germany': 0.695454, 'England': 0.67269, 'Brazil': 0.652878, ...}">self = &lt;tests.test_team_strength.TestTopTeamOrdering object at 0x7f5e642f0cb0&gt;
+all_scores = {'France': 0.700631, 'Germany': 0.695454, 'England': 0.67269, 'Brazil': 0.652878, ...}
+
+    def test_strong_teams_above_weak(self, all_scores):
+        """Argentina and Brazil should score higher than Qatar."""
+&gt;       assert "Qatar" in all_scores, "Legacy expectation requires Qatar; input table does not include it"
+E       AssertionError: Legacy expectation requires Qatar; input table does not include it
+E       assert 'Qatar' in {'France': 0.700631, 'Germany': 0.695454, 'England': 0.67269, 'Brazil': 0.652878, ...}
+
+tests/test_team_strength.py:90: AssertionError</failure></testcase><testcase classname="tests.test_team_strength.TestSquadValueNormalization" name="test_squad_value_in_unit_interval" time="0.000" /><testcase classname="tests.test_team_strength.TestSquadValueNormalization" name="test_england_high_squad_value" time="0.000" /><testcase classname="tests.test_team_strength.TestSquadValueNormalization" name="test_normalised_values_spread" time="0.000" /><testcase classname="tests.test_team_strength.TestHistoricalScore" name="test_historical_score_range" time="0.000" /><testcase classname="tests.test_team_strength.TestHistoricalScore" name="test_brazil_high_historical" time="0.000"><failure message="AssertionError: Brazil historical rank=4, expected top 3&#10;assert 4 &lt;= 3">self = &lt;tests.test_team_strength.TestHistoricalScore object at 0x7f5e64277610&gt;
+all_scores = {'France': 0.700631, 'Germany': 0.695454, 'England': 0.67269, 'Brazil': 0.652878, ...}
+scorer = &lt;oracle.team_strength.TeamStrengthScorer object at 0x7f5e641d56d0&gt;
+
+    def test_brazil_high_historical(self, all_scores, scorer):
+        """Retain the legacy top-three hypothesis; this scorer uses recent editions."""
+        sorted_teams = sorted(all_scores, key=lambda t: -scorer.score_historical_performance(t))
+        brazil_rank = sorted_teams.index("Brazil") + 1
+&gt;       assert brazil_rank &lt;= 3, \
+            f"Brazil historical rank={brazil_rank}, expected top 3"
+E       AssertionError: Brazil historical rank=4, expected top 3
+E       assert 4 &lt;= 3
+
+tests/test_team_strength.py:135: AssertionError</failure></testcase></testsuite></testsuites>

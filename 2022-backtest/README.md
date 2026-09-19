@@ -36,5 +36,9 @@ python -m pytest -q tests/test_evaluation_audit.py
 ```
 
 For the seed grid and cross-repository comparison, use the root
-`scripts/verify_consistency.py`. Legacy tests still fail; the focused
-evaluation tests do not certify the rest of the model.
+`scripts/verify_consistency.py`. The full suite records 47 passes and 4 failures,
+with no collection errors or skipped tests. The failures are three expectations
+needing absent Qatar inputs in the generic scorer, and Brazil's legacy top-three
+historical-rank hypothesis. A tied probability now shares the bottom-three
+cutoff instead of being ranked by dictionary order. Imports, compilation,
+and executable smoke checks pass; this is not predictive validation.

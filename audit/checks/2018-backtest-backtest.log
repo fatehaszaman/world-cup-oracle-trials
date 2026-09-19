@@ -1,0 +1,43 @@
+
+====================================================================
+  2018 World Cup Backtest — Trial 3 Validation Report
+  Hindsight knockout replay: 16 R16 points are supplied, not predicted.
+====================================================================
+
+  Stage       Correct   Max    Pts
+  ----------------------------------
+  R16              16    16     16
+  QF                5     8     10
+  SF                2     4      6
+  Final             1     2      5
+  Winner            1     1     10
+  ----------------------------------
+  TOTAL                  64     47   ✓ PASS
+
+  Winner predicted: France   Actual: France
+
+  Upset detection: 1/4 flagged
+    ✗ Germany         vs Mexico           p=0.0%  Germany lost 0-1
+    ⚑ South Korea     vs Germany          p=50.0%  2-0, defending champs out
+    ✗ Russia          vs Spain            p=0.0%  pens, hosts
+    ✗ Belgium         vs Brazil           p=0.0%  2-1 upset
+
+  Top 8 Championship Probabilities:
+    1. France                  31.2%  ← ACTUAL WINNER
+    2. Brazil                  25.0%
+    3. Portugal                18.8%
+    4. England                  6.2%
+    5. Mexico                   6.2%
+    6. Spain                    6.2%
+    7. Argentina                6.2%
+
+  Key fix verification:
+    Germany  base=0.870 → v3=0.815  (age-decay −0.055)
+    Croatia  base=0.760 → v3=0.755  (shootout rating=0.88)
+    France   base=0.880 → v3=0.914
+
+  Blended evaluation (bracket + market agreement + xG alignment):
+    Bracket outcome score:     73.4%  (weight 0.40)
+    Market agreement index:  99.3%  (weight 0.30, market MSE 0.0068, 15 matches)
+    xG-alignment score:        85.7%  (weight 0.30)
+    EXPLORATORY INDEX (not accuracy):             84.9%

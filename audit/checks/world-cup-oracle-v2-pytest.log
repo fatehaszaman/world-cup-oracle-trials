@@ -1,0 +1,113 @@
+.FF.F.F.......F....................FF....F                               [100%]
+=================================== FAILURES ===================================
+______ TestRegressionMatchProbabilities.test_france_beats_australia_group ______
+
+self = <tests.regression.test_regression.TestRegressionMatchProbabilities object at 0x7fe66928e210>
+
+    def test_france_beats_australia_group(self):
+        """France vs Australia: France P(win) should be > 0.65."""
+        p = _win_prob("France", "Australia")
+>       assert p > 0.65, f"France P(win) vs Australia = {p:.2f}, expected >0.65"
+E       AssertionError: France P(win) vs Australia = 0.62, expected >0.65
+E       assert 0.6246 > 0.65
+
+tests/regression/test_regression.py:66: AssertionError
+______ TestRegressionMatchProbabilities.test_brazil_beats_south_korea_r16 ______
+
+self = <tests.regression.test_regression.TestRegressionMatchProbabilities object at 0x7fe6691802b0>
+
+    def test_brazil_beats_south_korea_r16(self):
+        """Brazil vs South Korea (R16): Brazil P(win) should be > 0.65."""
+        p = _win_prob("Brazil", "South Korea")
+>       assert p > 0.65, f"Brazil P(win) = {p:.2f}, expected >0.65"
+E       AssertionError: Brazil P(win) = 0.60, expected >0.65
+E       assert 0.5972 > 0.65
+
+tests/regression/test_regression.py:71: AssertionError
+_____ TestRegressionMatchProbabilities.test_portugal_beats_switzerland_r16 _____
+
+self = <tests.regression.test_regression.TestRegressionMatchProbabilities object at 0x7fe6692c5910>
+
+    def test_portugal_beats_switzerland_r16(self):
+        """Portugal 6-1 Switzerland: Portugal P(win) should be > 0.60."""
+        p = _win_prob("Portugal", "Switzerland")
+>       assert p > 0.60, f"Portugal P(win) = {p:.2f}, expected >0.60"
+E       AssertionError: Portugal P(win) = 0.55, expected >0.60
+E       assert 0.5536 > 0.6
+
+tests/regression/test_regression.py:81: AssertionError
+________ TestRegressionMatchProbabilities.test_upset_saudi_vs_argentina ________
+
+self = <tests.regression.test_regression.TestRegressionMatchProbabilities object at 0x7fe6692e8270>
+
+    def test_upset_saudi_vs_argentina(self):
+        """Saudi Arabia vs Argentina: underdog P(win) should be in [0.05, 0.25]."""
+        p = _win_prob("Saudi Arabia", "Argentina")
+>       assert 0.05 <= p <= 0.35, \
+            f"Saudi Arabia P(win) = {p:.2f}, expected [0.05, 0.35]"
+E       AssertionError: Saudi Arabia P(win) = 0.37, expected [0.05, 0.35]
+E       assert 0.3682 <= 0.35
+
+tests/regression/test_regression.py:93: AssertionError
+_________ TestSingleMatchSimulation.test_stronger_team_wins_more_often _________
+
+self = <tests.test_monte_carlo.TestSingleMatchSimulation object at 0x7fe653c25f90>
+team_scores = {'France': 0.700068, 'Germany': 0.69773, 'England': 0.662786, 'Brazil': 0.654763, ...}
+
+    def test_stronger_team_wins_more_often(self, team_scores):
+        # Original >50% expectation is retained, not relaxed. The absent
+        # Qatar input is surfaced rather than silently testing a fallback.
+>       assert "Qatar" in team_scores, "Qatar is absent from the scorer input table"
+E       AssertionError: Qatar is absent from the scorer input table
+E       assert 'Qatar' in {'France': 0.700068, 'Germany': 0.69773, 'England': 0.662786, 'Brazil': 0.654763, ...}
+
+tests/test_monte_carlo.py:40: AssertionError
+__________________ TestTopTeamOrdering.test_qatar_near_bottom __________________
+
+self = <tests.test_team_strength.TestTopTeamOrdering object at 0x7fe653af4fc0>
+all_scores = {'France': 0.700068, 'Germany': 0.69773, 'England': 0.662786, 'Brazil': 0.654763, ...}
+
+    def test_qatar_near_bottom(self, all_scores):
+>       assert "Qatar" in all_scores, "Legacy expectation requires Qatar; input table does not include it"
+E       AssertionError: Legacy expectation requires Qatar; input table does not include it
+E       assert 'Qatar' in {'France': 0.700068, 'Germany': 0.69773, 'England': 0.662786, 'Brazil': 0.654763, ...}
+
+tests/test_team_strength.py:81: AssertionError
+_______________ TestTopTeamOrdering.test_strong_teams_above_weak _______________
+
+self = <tests.test_team_strength.TestTopTeamOrdering object at 0x7fe653aa4cb0>
+all_scores = {'France': 0.700068, 'Germany': 0.69773, 'England': 0.662786, 'Brazil': 0.654763, ...}
+
+    def test_strong_teams_above_weak(self, all_scores):
+        """Argentina and Brazil should score higher than Qatar."""
+>       assert "Qatar" in all_scores, "Legacy expectation requires Qatar; input table does not include it"
+E       AssertionError: Legacy expectation requires Qatar; input table does not include it
+E       assert 'Qatar' in {'France': 0.700068, 'Germany': 0.69773, 'England': 0.662786, 'Brazil': 0.654763, ...}
+
+tests/test_team_strength.py:90: AssertionError
+_______________ TestHistoricalScore.test_brazil_high_historical ________________
+
+self = <tests.test_team_strength.TestHistoricalScore object at 0x7fe653c27610>
+all_scores = {'France': 0.700068, 'Germany': 0.69773, 'England': 0.662786, 'Brazil': 0.654763, ...}
+scorer = <oracle.team_strength.TeamStrengthScorer object at 0x7fe653b8d6d0>
+
+    def test_brazil_high_historical(self, all_scores, scorer):
+        """Retain the legacy top-three hypothesis; this scorer uses recent editions."""
+        sorted_teams = sorted(all_scores, key=lambda t: -scorer.score_historical_performance(t))
+        brazil_rank = sorted_teams.index("Brazil") + 1
+>       assert brazil_rank <= 3, \
+            f"Brazil historical rank={brazil_rank}, expected top 3"
+E       AssertionError: Brazil historical rank=4, expected top 3
+E       assert 4 <= 3
+
+tests/test_team_strength.py:135: AssertionError
+=========================== short test summary info ============================
+FAILED tests/regression/test_regression.py::TestRegressionMatchProbabilities::test_france_beats_australia_group
+FAILED tests/regression/test_regression.py::TestRegressionMatchProbabilities::test_brazil_beats_south_korea_r16
+FAILED tests/regression/test_regression.py::TestRegressionMatchProbabilities::test_portugal_beats_switzerland_r16
+FAILED tests/regression/test_regression.py::TestRegressionMatchProbabilities::test_upset_saudi_vs_argentina
+FAILED tests/test_monte_carlo.py::TestSingleMatchSimulation::test_stronger_team_wins_more_often
+FAILED tests/test_team_strength.py::TestTopTeamOrdering::test_qatar_near_bottom
+FAILED tests/test_team_strength.py::TestTopTeamOrdering::test_strong_teams_above_weak
+FAILED tests/test_team_strength.py::TestHistoricalScore::test_brazil_high_historical
+8 failed, 34 passed, 16 warnings in 2.98s

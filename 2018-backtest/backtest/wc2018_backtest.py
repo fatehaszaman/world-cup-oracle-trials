@@ -103,7 +103,7 @@ PHYSICAL_BLEND_2018: dict[str, float] = {
     "Brazil":       +0.013,   # Neymar, Coutinho — lean squads
     "England":      +0.011,   # Young, Sterling, Kane — physical primes
     "Belgium":      +0.009,   # De Bruyne, Hazard — peak physical
-    "Croatia":      +0.018,   # Modrić/Rakitić peak form; 3 shootout wins en route to final
+    "Croatia":      +0.018,   # Retrospective form heuristic, not a pre-tournament estimate
     "Argentina":    -0.010,   # Sampaoli managerial chaos, squad discord, Messi isolated
     "Germany":      +0.008,   # Bundesliga programmes; age-decay already heavy
     "Spain":        +0.006,

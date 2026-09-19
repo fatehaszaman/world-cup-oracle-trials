@@ -1,0 +1,37 @@
+HISTORICAL REPLAY: in-sample scores are not predictive validation.
+
+================================================================
+  2022 World Cup Backtest — Validation Report
+  Hindsight-adjusted replay; not held-out predictive accuracy.
+================================================================
+
+Stage         Correct   Max    Pts
+------------------------------------
+  R16              10    16     10
+  QF                5     8     10
+  SF                1     4      3
+  Final             1     2      5
+  Winner            0     1      0
+------------------------------------
+  TOTAL                  64     28   ✗ FAIL
+
+Winner prediction: France                Actual: Argentina
+
+Upset detection: 2/8 flagged correctly
+    Saudi Arabia    vs Argentina       (group )  model:   0.0%
+  ⚑ Japan           vs Germany         (group )  model:  50.0%
+    Japan           vs Spain           (group )  model:   0.0%
+    Morocco         vs Belgium         (group )  model:   0.0%
+    Morocco         vs Spain           (r16   )  model:   0.0%
+    Morocco         vs Portugal        (qf    )  model:   0.0%
+    Croatia         vs Brazil          (qf    )  model:   0.0%
+  ⚑ Australia       vs Denmark         (group )  model:  50.0%
+Blended evaluation (bracket + market agreement + xG alignment):
+  Bracket outcome score:     43.8%  (weight 0.40)
+  Market agreement index:  99.1%  (weight 0.30, market MSE 0.0091, 15 matches)
+  xG-alignment score:        80.0%  (weight 0.30, 12/15 matches agree)
+  EXPLORATORY INDEX (not accuracy):             71.2%
+
+================================================================
+
+No proposed weight change has been applied or revalidated by this example.

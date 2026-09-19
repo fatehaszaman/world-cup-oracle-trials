@@ -184,6 +184,7 @@ POPULATION_LOG_MAX: float = 9.1
 # Monte Carlo
 # ---------------------------------------------------------------------------
 MC_DEFAULT_RUNS: int = 50_000
+MC_MATCH_SIMULATIONS: int = 10_000
 MC_RANDOM_SEED: int = 42
 POISSON_BASE_LAMBDA: float = 1.35
 POISSON_STRENGTH_SCALE: float = 0.6

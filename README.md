@@ -71,8 +71,16 @@ python scripts/verify_consistency.py --baselines
 ```
 
 Each folder's README gives its own runnable entry point. Focused audit tests
-pass, but the legacy test suites have failures and collection errors; this
-repository does not claim an all-green suite or production readiness.
+pass, and the full suites now collect without errors. Across the three trial
+folders, 125 tests pass and 12 fail; none are skipped. The remaining failures
+are disclosed in [AUDIT.md](AUDIT.md), not hidden with relaxed thresholds.
+This repository does not claim an all-green suite or production readiness.
+
+For full isolated tests, module imports, compilation, and executable smoke
+checks, run `python scripts/check_all.py`. Add `--baselines` to include sibling
+v1/v2 clones. This command intentionally exits nonzero while failures remain;
+it writes evidence under `audit/checks/`. Smoke examples use 16 simulations
+to check execution only, not to substantiate the published 50,000-run scores.
 
 ## Related repositories
 
@@ -82,4 +90,4 @@ repository does not claim an all-green suite or production readiness.
   2022 BPS 40/64; 2018 BPS 25/64 at their documented settings.
   Its proposed dimension reweighting is not used by its fixed-score 2022 backtest.
 
-Maintained by [fatehaszaman](https://github.com/fatehaszaman). License: MIT.
+Maintained by [fatehaszaman](https://github.com/fatehaszaman).

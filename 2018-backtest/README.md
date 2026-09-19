@@ -39,4 +39,9 @@ python -m pytest -q tests/test_evaluation_audit.py
 ```
 
 The example now invokes the 2018 module rather than a missing 2022 module.
-Legacy tests still contain failures and a collection error.
+The full suite now records 41 passes and 4 failures, with no collection errors
+or skipped tests. The failures are three expectations needing absent Qatar
+inputs in the generic scorer, and Brazil's legacy top-three historical-rank
+hypothesis. Imports, compilation, and executable smoke checks pass. The copied
+2022 regression file was replaced with local 2018 mechanical invariants,
+not represented as 2022 tests suddenly passing. See [AUDIT.md](../AUDIT.md).
