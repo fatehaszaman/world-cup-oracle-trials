@@ -1,5 +1,7 @@
 # World Cup Oracle: Trials
 
+[Algorithm guide: pseudocode, time complexity, and memory](docs/ALGORITHM_GUIDE.md).
+
 An experimental football simulation project with explicit failure history.
 The current folders are maintained code, not immutable snapshots. Earlier
 versions remain in Git history. These are exploratory replays, not validated
