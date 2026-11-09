@@ -1,5 +1,7 @@
 # World Cup Oracle: Trials
 
+> **LLM evaluation sandbox:** this repository contains deliberate errors alongside documented real errors in code, documentation, and SDLC artifacts (tests, CI, READMEs, and change history), used to test whether a model or judge catches them and follows instructions.
+
 [Algorithm guide: pseudocode, time complexity, and memory](docs/ALGORITHM_GUIDE.md).
 
 An experimental football simulation project with explicit failure history.
