@@ -23,6 +23,10 @@ See [AUDIT.md](AUDIT.md) for the current results, limitations, test status,
 and corrections. [CHANGELOG.md](CHANGELOG.md) preserves the explanation rather
 than silently replacing the earlier claims.
 
+## What I learned
+
+I published 2022 scores (48/64, and separately 51/64 on all seeds) before verifying them against executable runs. The reproducible 2022 result is 40/64. I withdrew the earlier claims publicly and kept them in Git history. Every figure in this README now comes from a scripted run, and replays are labeled as historical, not forecasting accuracy. See [LESSONS.md](LESSONS.md) for the cause, the fix, and the commits.
+
 ## Current results
 
 Settings: 50,000 simulations; seed 42 for 2022, seed 2018 for 2018.
